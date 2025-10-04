@@ -435,7 +435,16 @@
     "version": "الإصدار",
     "environment": "البيئة",
     "production": "الإنتاج",
-    "development": "التطوير"
+    "development": "التطوير",
+    "smsBalance": "رصيد الرسائل النصية",
+    "smsCredits": "رصيد الرسائل النصية",
+    "availableCredits": "الرصيد المتاح من الرسائل النصية",
+    "credits": "رصيد",
+    "smsInfo": "معلومات الرسائل النصية",
+    "provider": "مقدم الخدمة",
+    "lastUpdated": "آخر تحديث",
+    "smsBalanceError": "فشل في تحميل معلومات رصيد الرسائل النصية",
+    "noSmsBalanceData": "لا توجد بيانات رصيد رسائل نصية متاحة"
   },
   "occasionTypes": {
     "title": "إدارة أنواع المناسبات",

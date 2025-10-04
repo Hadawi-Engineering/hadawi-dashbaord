@@ -37,6 +37,7 @@ import type {
   ApiResponse,
   CloudinaryUploadSignature,
   CloudinaryUploadSignatureRequest,
+  SmsBalance,
 } from '../types';
 
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
@@ -568,6 +569,13 @@ class AdminService {
 
   async getCloudinaryUploadSignature(request: CloudinaryUploadSignatureRequest = {}): Promise<CloudinaryUploadSignature> {
     const { data } = await this.api.post<CloudinaryUploadSignature>('/cloudinary/upload-signature', request);
+    return data;
+  }
+
+  // ==================== SMS BALANCE ====================
+
+  async getSmsBalance(): Promise<SmsBalance> {
+    const { data } = await this.api.get<SmsBalance>('/auth/sms-balance');
     return data;
   }
 }

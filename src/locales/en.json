@@ -436,7 +436,16 @@
     "version": "Version",
     "environment": "Environment",
     "production": "Production",
-    "development": "Development"
+    "development": "Development",
+    "smsBalance": "SMS Balance",
+    "smsCredits": "SMS Credits",
+    "availableCredits": "Available SMS Credits",
+    "credits": "Credits",
+    "smsInfo": "SMS Information",
+    "provider": "Provider",
+    "lastUpdated": "Last Updated",
+    "smsBalanceError": "Failed to load SMS balance information",
+    "noSmsBalanceData": "No SMS balance data available"
   },
   "occasionTypes": {
     "title": "Occasion Types Management",

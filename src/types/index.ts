@@ -537,3 +537,8 @@ export interface DeliveryImageUploadResponse {
   uploadedFiles: string[];
 }
 
+// SMS Balance Types
+export interface SmsBalance {
+  credits: number;
+}
+
