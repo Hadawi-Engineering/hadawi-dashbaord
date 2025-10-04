@@ -1,0 +1,539 @@
+// Admin Types
+export interface Admin {
+  id: string;
+  email: string;
+  name?: string;
+  role: 'super_admin' | 'admin' | 'moderator' | 'support';
+  isActive: boolean;
+}
+
+export interface LoginResponse {
+  admin: Admin;
+  token: string;
+  refreshToken: string;
+  expiresIn: number;
+}
+
+// User Types
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  city?: string;
+  birthDate?: string;
+  gender?: string;
+  isBlocked: boolean;
+  occasionsCount?: number;
+  paymentsCount?: number;
+  createdAt: string;
+}
+
+// Occasion Types
+export interface Occasion {
+  id: string;
+  occasionName: string;
+  occasionType: string;
+  userId: string;
+  userName?: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface OccasionDetails {
+  id: string;
+  occasionName: string;
+  occasionType: string;
+  giftPrice: number;
+  isCompleted: boolean;
+  completionDate: string | null;
+  totalPaid: number;
+  remainingAmount: number;
+  isFullyPaid: boolean;
+}
+
+export interface OccasionPayment {
+  id: string;
+  paymentAmount: number;
+  paymentStatus: 'pending' | 'completed' | 'failed';
+  transactionId: string;
+  payerName: string;
+  personName: string;
+  personEmail: string;
+  personPhone: string;
+  paymentDate: string;
+  remainingPrice: number;
+  createdAt: string;
+}
+
+export interface OccasionPaymentsSummary {
+  totalPayments: number;
+  totalAmount: number;
+  completedPayments: number;
+  pendingPayments: number;
+  failedPayments: number;
+  remainingAmount: number;
+  completionPercentage: string;
+}
+
+export interface OccasionPaymentsResponse {
+  occasion: OccasionDetails;
+  payments: OccasionPayment[];
+  summary: OccasionPaymentsSummary;
+}
+
+// Payment Types
+export interface Payment {
+  id: string;
+  userId: string;
+  userName?: string;
+  amount: number;
+  status: 'pending' | 'completed' | 'failed' | 'refunded';
+  occasionId?: string;
+  createdAt: string;
+}
+
+export interface PaymentStats {
+  totalRevenue: number;
+  todayRevenue: number;
+  monthlyRevenue: number;
+  totalPayments: number;
+  averagePayment: number;
+}
+
+// Promo Code Types
+export interface PromoCode {
+  id: string;
+  code: string;
+  discount: number;
+  maxUsage: number;
+  usedCount: number;
+  expiryDate: string;
+  isActive: boolean;
+  createdAt: string;
+}
+
+// Banner Types
+export interface Banner {
+  id: string;
+  title: string;
+  bannerName: string;
+  icon?: string;
+  buttonText?: string;
+  imageUrl: string;
+  actionUrl?: string;
+  isActive: boolean;
+  order?: number;
+  createdAt: string;
+}
+
+// City & Quarter Types
+export interface City {
+  id: string;
+  name: string;
+  createdAt: string;
+}
+
+export interface Quarter {
+  id: string;
+  cityId: string;
+  name: string;
+  createdAt: string;
+}
+
+// Delivery Partner Types
+export interface DeliveryPartner {
+  id: string;
+  partnerId: string;
+  name: string;
+  email: string;
+  phone: string;
+  vehicleModel: string;
+  vehiclePlateNumber: string;
+  vehicleInfo: {
+    color: string;
+    year: number;
+    insurance: string;
+  };
+  rating: number;
+  totalDeliveries: number;
+  isActive: boolean;
+  isOnline: boolean;
+  isAdmin: boolean;
+  status: 'available' | 'busy' | 'offline';
+  currentLocation?: {
+    lat: number;
+    lng: number;
+    address: string;
+    timestamp?: string;
+  };
+  deliveryZones: string[];
+  lastOnlineAt?: string;
+  createdAt: string;
+  updatedAt: string;
+  deliveryRecords?: Array<{
+    id: string;
+    status: string;
+    deliveryDate: string;
+    deliveryAddress?: string;
+    recipientName?: string;
+    occasion?: {
+      id: string;
+      occasionName: string;
+      occasionType: string;
+      giftPrice: number;
+    };
+  }>;
+}
+
+export interface DeliveryPartnerCreate {
+  partnerId: string;
+  name: string;
+  email: string;
+  phone: string;
+  vehicleModel: string;
+  vehiclePlateNumber: string;
+  vehicleInfo: {
+    color: string;
+    year: number;
+    insurance: string;
+  };
+  rating?: number;
+  totalDeliveries?: number;
+  isActive?: boolean;
+  isOnline?: boolean;
+  isAdmin?: boolean;
+  status?: 'available' | 'busy' | 'offline';
+  currentLocation?: {
+    lat: number;
+    lng: number;
+    address: string;
+  };
+  deliveryZones: string[];
+}
+
+export interface DeliveryPartnerUpdate {
+  name?: string;
+  email?: string;
+  phone?: string;
+  vehicleModel?: string;
+  vehiclePlateNumber?: string;
+  vehicleInfo?: {
+    color?: string;
+    year?: number;
+    insurance?: string;
+  };
+  rating?: number;
+  status?: 'available' | 'busy' | 'offline';
+  deliveryZones?: string[];
+}
+
+export interface DeliveryPartnerStatistics {
+  totalPartners: number;
+  activePartners: number;
+  onlinePartners: number;
+  totalDeliveries: number;
+  averageRating: number;
+  statusBreakdown: Array<{
+    status: string;
+    count: number;
+  }>;
+}
+
+export interface DeliveryPartnerResponse {
+  deliveryPartners: DeliveryPartner[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+}
+
+// Withdrawal Types
+export interface WithdrawalRequest {
+  id: string;
+  userId: string;
+  userName: string;
+  phone: string;
+  accountNumber: string;
+  iban: string;
+  paymentAccount: string;
+  paymentDescription?: string;
+  amount: number;
+  status: 'pending' | 'approved' | 'rejected';
+  date: string;
+  processedAt?: string;
+  approvedBy?: string;
+  rejectionReason?: string;
+}
+
+// Analytics Types
+export interface DashboardStats {
+  users: {
+    total: number;
+    active: number;
+    blocked: number;
+    recent: number;
+  };
+  occasions: {
+    total: number;
+  };
+  payments: {
+    total: number;
+    totalAmount: number;
+  };
+  promoCodes: {
+    total: number;
+    active: number;
+  };
+  banners: {
+    total: number;
+    active: number;
+  };
+  withdrawals: {
+    pending: number;
+    approved: number;
+    totalAmount: number;
+  };
+  deliveryPartners: {
+    total: number;
+    active: number;
+    online: number;
+  };
+}
+
+export interface RecentActivity {
+  user: string;
+  type: string;
+  amount: string;
+  date: string;
+}
+
+export interface RevenueAnalytics {
+  total: number;
+  byMonth: number[];
+  byCategory: Record<string, number>;
+  growth: string;
+}
+
+// Tax Types
+export interface TaxConfig {
+  serviceTax: string;
+  deliveryTax: string;
+  packagingTax: string[];
+}
+
+export interface Tax {
+  id: string;
+  name: string;
+  type: 'service' | 'delivery' | 'packaging' | 'custom';
+  amount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TaxStatistics {
+  total: number;
+  byType: Array<{
+    type: string;
+    count: number;
+  }>;
+}
+
+// Packaging Types
+export interface PackagingType {
+  id: string;
+  name: string;
+  images: string[];
+  amount: number;
+  status: 'active' | 'inactive' | 'archived';
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PackagingStatistics {
+  total: number;
+  byStatus: Array<{
+    status: string;
+    count: number;
+  }>;
+  totalAmount: number;
+}
+
+// Notification Types
+export interface BulkNotification {
+  title: string;
+  body: string;
+  userIds: string[] | 'all';
+  data?: Record<string, any>;
+}
+
+// Pagination Types
+export interface PaginationParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  sortBy?: string;
+  order?: 'asc' | 'desc';
+  status?: string;
+  type?: string;
+  startDate?: string;
+  endDate?: string;
+}
+
+export interface PaginationResponse<T> {
+  success: boolean;
+  data: T[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+// API Response Types
+export interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  error?: {
+    code: string;
+    message: string;
+  };
+}
+
+// Cloudinary Types
+export interface CloudinaryUploadResponse {
+  public_id: string;
+  version: number;
+  signature: string;
+  width: number;
+  height: number;
+  format: string;
+  resource_type: string;
+  created_at: string;
+  tags: string[];
+  bytes: number;
+  type: string;
+  etag: string;
+  placeholder: boolean;
+  url: string;
+  secure_url: string;
+  access_mode: string;
+  original_filename: string;
+  original_extension: string;
+  api_key: string;
+}
+
+export interface CloudinaryUploadError {
+  error: {
+    message: string;
+    http_code: number;
+  };
+}
+
+export interface CloudinaryUploadOptions {
+  folder?: string;
+  public_id?: string;
+  resource_type?: 'image' | 'video' | 'raw' | 'auto';
+  transformation?: any[];
+  tags?: string[];
+  context?: Record<string, string>;
+}
+
+export interface CloudinaryUploadSignature {
+  signature: string;
+  timestamp: number;
+  cloudName: string;
+  apiKey: string;
+  folder: string;
+  transformation: {
+    width: number;
+    height: number;
+    crop: string;
+    quality: string;
+    fetch_format?: string;
+  };
+}
+
+export interface CloudinaryUploadSignatureRequest {
+  folder?: string;
+  transformation?: {
+    width?: number;
+    height?: number;
+    crop?: string;
+    quality?: string;
+  };
+}
+
+// Delivery Record Types
+export interface DeliveryRecord {
+  id: string;
+  occasionId: string;
+  deliveryPartnerId: string;
+  giftImages: string[];
+  receiptImages: string[];
+  deliveryDate: string;
+  deliveryAddress: string;
+  recipientName: string;
+  recipientPhone: string;
+  notes?: string;
+  status: 'pending' | 'in_transit' | 'delivered' | 'failed' | 'cancelled';
+  createdAt: string;
+  updatedAt: string;
+  occasion?: {
+    id: string;
+    occasionName: string;
+    occasionType: string;
+    giftPrice: number;
+  };
+  deliveryPartner?: {
+    id: string;
+    name: string;
+    email: string;
+    phone: string;
+  };
+}
+
+export interface DeliveryRecordCreate {
+  occasionId: string;
+  deliveryPartnerId: string;
+  deliveryDate: string;
+  deliveryAddress: string;
+  recipientName: string;
+  recipientPhone: string;
+  notes?: string;
+  status?: 'pending' | 'in_transit' | 'delivered' | 'failed' | 'cancelled';
+}
+
+export interface DeliveryRecordUpdate {
+  deliveryPartnerId?: string;
+  deliveryDate?: string;
+  deliveryAddress?: string;
+  recipientName?: string;
+  recipientPhone?: string;
+  notes?: string;
+  status?: 'pending' | 'in_transit' | 'delivered' | 'failed' | 'cancelled';
+}
+
+export interface DeliveryStatistics {
+  total: number;
+  byStatus: Array<{
+    status: string;
+    count: number;
+  }>;
+  recentDeliveries: number;
+}
+
+export interface DeliveryImageUploadResponse {
+  message: string;
+  deliveryRecord: {
+    id: string;
+    giftImages?: string[];
+    receiptImages?: string[];
+  };
+  uploadedFiles: string[];
+}
+
