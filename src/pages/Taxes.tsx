@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Edit2, Trash2, BarChart3, Calculator, Receipt } from 'lucide-react';
+import { Plus, Edit2, Trash2, BarChart3, Calculator, Receipt, Settings } from 'lucide-react';
 import adminService from '../services/adminService';
 import Card from '../components/ui/Card';
-import Table from '../components/ui/Table';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
 import Modal from '../components/ui/Modal';
@@ -11,32 +10,35 @@ import Input from '../components/ui/Input';
 import { useLanguage } from '../contexts/LanguageContext';
 import type { Tax, TaxStatistics } from '../types';
 
-type FilterType = 'all' | 'service' | 'delivery' | 'packaging' | 'custom';
+type TaxCategory = 'service' | 'delivery' | 'custom';
 
 export default function Taxes() {
   const { t, isRTL } = useLanguage();
   const [showModal, setShowModal] = useState(false);
   const [showStatsModal, setShowStatsModal] = useState(false);
   const [editingTax, setEditingTax] = useState<Tax | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterType, setFilterType] = useState<FilterType>('all');
+  const [selectedCategory, setSelectedCategory] = useState<TaxCategory>('service');
   const queryClient = useQueryClient();
 
   const [formData, setFormData] = useState({
     name: '',
-    type: 'service' as Tax['type'],
+    category: 'service' as Tax['category'],
+    type: 'percent' as Tax['type'],
     amount: 0,
+    status: 'active' as Tax['status'],
   });
 
-  // Fetch taxes
+  // Fetch all taxes
   const { data: taxes, isLoading } = useQuery({
-    queryKey: ['taxes', filterType],
-    queryFn: () => {
-      if (filterType === 'all') {
-        return adminService.getTaxes();
-      }
-      return adminService.getTaxesByType(filterType);
-    },
+    queryKey: ['taxes'],
+    queryFn: () => adminService.getTaxes(),
+  });
+
+  // Fetch tax by category
+  const { data: categoryTax, isLoading: isLoadingCategory } = useQuery({
+    queryKey: ['tax-category', selectedCategory],
+    queryFn: () => adminService.getTaxByCategory(selectedCategory),
+    enabled: false, // We'll trigger this manually
   });
 
   // Fetch statistics
@@ -82,20 +84,25 @@ export default function Taxes() {
     onError: () => alert(t('common.error')),
   });
 
-  const handleOpenModal = (tax?: Tax) => {
+  const handleOpenModal = (category: TaxCategory, tax?: Tax) => {
+    setSelectedCategory(category);
     if (tax) {
       setEditingTax(tax);
       setFormData({
         name: tax.name,
+        category: tax.category,
         type: tax.type,
         amount: tax.amount,
+        status: tax.status,
       });
     } else {
       setEditingTax(null);
       setFormData({
         name: '',
-        type: 'service',
+        category: category,
+        type: 'percent',
         amount: 0,
+        status: 'active',
       });
     }
     setShowModal(true);
@@ -133,23 +140,26 @@ export default function Taxes() {
     }
   };
 
+  const getCategoryBadge = (category: Tax['category']) => {
+    const config = {
+      service: { color: 'blue' as const, label: t('taxes.categories.service') },
+      delivery: { color: 'green' as const, label: t('taxes.categories.delivery') },
+      custom: { color: 'purple' as const, label: t('taxes.categories.custom') },
+    };
+    return <Badge color={config[category].color}>{config[category].label}</Badge>;
+  };
+
   const getTypeBadge = (type: Tax['type']) => {
     const config = {
-      service: { color: 'blue' as const, label: t('taxes.types.service') },
-      delivery: { color: 'green' as const, label: t('taxes.types.delivery') },
-      packaging: { color: 'purple' as const, label: t('taxes.types.packaging') },
-      custom: { color: 'gray' as const, label: t('taxes.types.custom') },
+      percent: { color: 'blue' as const, label: t('taxes.types.percent') },
+      amount: { color: 'green' as const, label: t('taxes.types.amount') },
     };
     return <Badge color={config[type].color}>{config[type].label}</Badge>;
   };
 
-  const filteredTaxes = taxes?.filter((tax) => {
-    const matchesSearch =
-      tax.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      tax.type.toLowerCase().includes(searchTerm.toLowerCase());
-
-    return matchesSearch;
-  });
+  const getTaxByCategory = (category: TaxCategory) => {
+    return taxes?.find(tax => tax.category === category);
+  };
 
   return (
     <div className="space-y-6">
@@ -163,159 +173,127 @@ export default function Taxes() {
             <BarChart3 size={20} />
             {t('taxes.statistics')}
           </Button>
-          <Button onClick={() => handleOpenModal()}>
-            <Plus size={20} />
-            {t('taxes.add')}
-          </Button>
         </div>
       </div>
 
-      {/* Statistics Cards */}
-      {statistics && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <Card>
-            <div className="p-6">
-              <div className="flex items-center">
-                <div className="p-2 bg-primary-100 rounded-lg">
-                  <Calculator className="w-6 h-6 text-primary-600" />
-                </div>
-                <div className={isRTL ? 'mr-4' : 'ml-4'}>
-                  <p className="text-sm font-medium text-gray-600">{t('taxes.totalTaxes')}</p>
-                  <p className="text-2xl font-bold text-gray-900">{statistics.total}</p>
-                </div>
-              </div>
-            </div>
-          </Card>
-
-          {statistics.byType.map((typeData) => (
-            <Card key={typeData.type}>
+      {/* Tax Categories */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {(['service', 'delivery', 'custom'] as TaxCategory[]).map((category) => {
+          const tax = getTaxByCategory(category);
+          return (
+            <Card key={category}>
               <div className="p-6">
-                <div className="flex items-center">
-                  <div className="p-2 bg-blue-100 rounded-lg">
-                    <Receipt className="w-6 h-6 text-blue-600" />
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center">
+                    <div className="p-2 bg-primary-100 rounded-lg">
+                      <Settings className="w-6 h-6 text-primary-600" />
+                    </div>
+                    <div className={isRTL ? 'mr-4' : 'ml-4'}>
+                      <h3 className="text-lg font-semibold text-gray-900">
+                        {t(`taxes.categories.${category}`)}
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        {t(`taxes.categories.${category}Description`)}
+                      </p>
+                    </div>
                   </div>
-                  <div className={isRTL ? 'mr-4' : 'ml-4'}>
-                    <p className="text-sm font-medium text-gray-600">
-                      {t(`taxes.types.${typeData.type}`)}
-                    </p>
-                    <p className="text-2xl font-bold text-gray-900">{typeData.count}</p>
-                  </div>
+                  {getCategoryBadge(category)}
                 </div>
+
+                {tax ? (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-600">{t('taxes.name')}</span>
+                      <span className="text-sm text-gray-900">{tax.name}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-600">{t('taxes.amount')}</span>
+                      <span className="text-sm text-gray-900">
+                        {tax.amount}{tax.type === 'percent' ? '%' : ' SAR'}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-600">{t('taxes.type')}</span>
+                      {getTypeBadge(tax.type)}
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-600">{t('common.status')}</span>
+                      <Badge color={tax.status === 'active' ? 'green' : 'gray'}>
+                        {t(`common.${tax.status}`)}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-600">{t('common.date')}</span>
+                      <span className="text-sm text-gray-900">
+                        {new Date(tax.createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <div className="flex gap-2 pt-4">
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => handleOpenModal(category, tax)}
+                        className="flex-1"
+                      >
+                        <Edit2 size={16} />
+                        {t('common.edit')}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="danger"
+                        onClick={() => handleDelete(tax.id)}
+                        className="flex-1"
+                      >
+                        <Trash2 size={16} />
+                        {t('common.delete')}
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <Calculator className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-600 mb-4">{t('taxes.noTaxConfigured')}</p>
+                    <Button
+                      onClick={() => handleOpenModal(category)}
+                      className="w-full"
+                    >
+                      <Plus size={16} />
+                      {t('taxes.configureTax')}
+                    </Button>
+                  </div>
+                )}
               </div>
             </Card>
-          ))}
-        </div>
-      )}
-
-      {/* Search and Filters */}
-      <Card>
-        <div className="p-6">
-          <div className="flex flex-col md:flex-row gap-4">
-            <Input
-              type="text"
-              placeholder={t('taxes.searchPlaceholder')}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="flex-1"
-            />
-            <div className="flex gap-2">
-              <Button
-                variant={filterType === 'all' ? 'primary' : 'secondary'}
-                onClick={() => setFilterType('all')}
-              >
-                {t('common.all')}
-              </Button>
-              <Button
-                variant={filterType === 'service' ? 'primary' : 'secondary'}
-                onClick={() => setFilterType('service')}
-              >
-                {t('taxes.types.service')}
-              </Button>
-              <Button
-                variant={filterType === 'delivery' ? 'primary' : 'secondary'}
-                onClick={() => setFilterType('delivery')}
-              >
-                {t('taxes.types.delivery')}
-              </Button>
-              <Button
-                variant={filterType === 'packaging' ? 'primary' : 'secondary'}
-                onClick={() => setFilterType('packaging')}
-              >
-                {t('taxes.types.packaging')}
-              </Button>
-              <Button
-                variant={filterType === 'custom' ? 'primary' : 'secondary'}
-                onClick={() => setFilterType('custom')}
-              >
-                {t('taxes.types.custom')}
-              </Button>
-            </div>
-          </div>
-        </div>
-      </Card>
-
-      {/* Table */}
-      <Card>
-        <Table loading={isLoading}>
-          <Table.Head>
-            <Table.Row>
-              <Table.Th>{t('taxes.name')}</Table.Th>
-              <Table.Th>{t('taxes.type')}</Table.Th>
-              <Table.Th>{t('taxes.amount')}</Table.Th>
-              <Table.Th>{t('common.date')}</Table.Th>
-              <Table.Th>{t('common.actions')}</Table.Th>
-            </Table.Row>
-          </Table.Head>
-          <Table.Body>
-            {filteredTaxes?.map((tax) => (
-              <Table.Row key={tax.id}>
-                <Table.Td>
-                  <div className="font-medium text-gray-900">{tax.name}</div>
-                </Table.Td>
-                <Table.Td>
-                  {getTypeBadge(tax.type)}
-                </Table.Td>
-                <Table.Td>
-                  <div className="font-medium text-gray-900">{tax.amount}%</div>
-                </Table.Td>
-                <Table.Td>
-                  <div className="text-gray-600">
-                    {new Date(tax.createdAt).toLocaleDateString()}
-                  </div>
-                </Table.Td>
-                <Table.Td>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      onClick={() => handleOpenModal(tax)}
-                    >
-                      <Edit2 size={16} />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="danger"
-                      onClick={() => handleDelete(tax.id)}
-                    >
-                      <Trash2 size={16} />
-                    </Button>
-                  </div>
-                </Table.Td>
-              </Table.Row>
-            ))}
-          </Table.Body>
-        </Table>
-      </Card>
+          );
+        })}
+      </div>
 
       {/* Create/Edit Modal */}
       {showModal && (
         <Modal
           isOpen={showModal}
           onClose={handleCloseModal}
-          title={editingTax ? t('taxes.edit') : t('taxes.add')}
+          title={editingTax ? t('taxes.edit') : t('taxes.configureTax')}
           size="lg"
         >
           <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {t('taxes.category')}
+              </label>
+              <select
+                value={formData.category}
+                onChange={(e) => setFormData({ ...formData, category: e.target.value as Tax['category'] })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                required
+                disabled={!!editingTax} // Don't allow changing category when editing
+              >
+                <option value="service">{t('taxes.categories.service')}</option>
+                <option value="delivery">{t('taxes.categories.delivery')}</option>
+                <option value="custom">{t('taxes.categories.custom')}</option>
+              </select>
+            </div>
+
             <Input
               label={t('taxes.name')}
               value={formData.name}
@@ -334,10 +312,8 @@ export default function Taxes() {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                 required
               >
-                <option value="service">{t('taxes.types.service')}</option>
-                <option value="delivery">{t('taxes.types.delivery')}</option>
-                <option value="packaging">{t('taxes.types.packaging')}</option>
-                <option value="custom">{t('taxes.types.custom')}</option>
+                <option value="percent">{t('taxes.types.percent')}</option>
+                <option value="amount">{t('taxes.types.amount')}</option>
               </select>
             </div>
 
@@ -346,16 +322,30 @@ export default function Taxes() {
               type="number"
               step="0.1"
               min="0"
-              max="100"
               value={formData.amount}
               onChange={(e) => setFormData({ ...formData, amount: parseFloat(e.target.value) || 0 })}
-              placeholder="15.0"
+              placeholder={formData.type === 'percent' ? "15.0" : "25.0"}
               required
             />
 
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {t('common.status')}
+              </label>
+              <select
+                value={formData.status}
+                onChange={(e) => setFormData({ ...formData, status: e.target.value as Tax['status'] })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                required
+              >
+                <option value="active">{t('common.active')}</option>
+                <option value="inactive">{t('common.inactive')}</option>
+              </select>
+            </div>
+
             <div className="flex gap-3 pt-4">
               <Button type="submit" loading={createMutation.isPending || updateMutation.isPending} className="flex-1">
-                {editingTax ? t('common.update') : t('common.add')}
+                {editingTax ? t('common.update') : t('taxes.configureTax')}
               </Button>
               <Button type="button" variant="secondary" onClick={handleCloseModal} className="flex-1">
                 {t('common.cancel')}

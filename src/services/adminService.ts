@@ -411,6 +411,11 @@ class AdminService {
     return data;
   }
 
+  async getTaxByCategory(category: string): Promise<Tax> {
+    const { data } = await this.api.get<Tax>(`/taxes/category/${category}`);
+    return data;
+  }
+
   async getTaxesByType(type: string): Promise<Tax[]> {
     const { data } = await this.api.get<Tax[]>(`/taxes/type/${type}`);
     return data;

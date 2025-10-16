@@ -138,7 +138,6 @@
     "occasionUpdated": "تم تحديث المناسبة بنجاح",
     "occasionCreated": "تم إنشاء المناسبة بنجاح",
     "owner": "المالك",
-    "details": "تفاصيل المناسبة",
     "toggle": "تبديل",
     "count": "عدد",
     "details": {
@@ -478,20 +477,28 @@
     "add": "إضافة ضريبة جديدة",
     "edit": "تعديل الضريبة",
     "delete": "حذف الضريبة",
-    "searchPlaceholder": "البحث في الضرائب...",
+    "configureTax": "تكوين الضريبة",
+    "category": "فئة الضريبة",
     "name": "اسم الضريبة",
     "namePlaceholder": "ضريبة الخدمة",
     "type": "نوع الضريبة",
-    "amount": "مبلغ الضريبة (%)",
+    "amount": "مبلغ الضريبة",
     "statistics": "إحصائيات الضرائب",
     "totalTaxes": "إجمالي الضرائب",
     "breakdown": "تفصيل الضرائب",
     "byType": "حسب النوع",
-    "types": {
+    "noTaxConfigured": "لا توجد ضريبة مكونة لهذه الفئة",
+    "categories": {
       "service": "ضريبة الخدمة",
       "delivery": "ضريبة التوصيل",
-      "packaging": "ضريبة التغليف",
-      "custom": "ضريبة مخصصة"
+      "custom": "ضريبة مخصصة",
+      "serviceDescription": "ضريبة تطبق على رسوم الخدمة",
+      "deliveryDescription": "ضريبة تطبق على رسوم التوصيل",
+      "customDescription": "ضريبة مخصصة لأغراض محددة"
+    },
+    "types": {
+      "percent": "نسبة مئوية",
+      "amount": "مبلغ ثابت"
     },
     "deleteConfirm": "هل أنت متأكد من حذف هذه الضريبة؟",
     "taxCreated": "تم إنشاء الضريبة بنجاح",
@@ -508,6 +515,11 @@
     "namePlaceholder": "صندوق هدايا فاخر",
     "images": "الصور",
     "amount": "المبلغ (ريال)",
+    "giftType": "نوع الهدية",
+    "giftTypeOptions": {
+      "gift": "هدية",
+      "money": "مال"
+    },
     "statistics": "إحصائيات التغليف",
     "totalPackaging": "إجمالي التغليف",
     "totalAmount": "إجمالي المبلغ",

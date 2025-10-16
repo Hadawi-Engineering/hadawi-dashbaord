@@ -29,6 +29,7 @@ export default function Packaging() {
     name: '',
     images: [] as string[],
     amount: 0,
+    giftType: 'gift' as PackagingType['giftType'],
     status: 'active' as PackagingType['status'],
   });
 
@@ -104,6 +105,7 @@ export default function Packaging() {
         name: packaging.name,
         images: packaging.images,
         amount: packaging.amount,
+        giftType: packaging.giftType,
         status: packaging.status,
       });
     } else {
@@ -112,6 +114,7 @@ export default function Packaging() {
         name: '',
         images: [],
         amount: 0,
+        giftType: 'gift',
         status: 'active',
       });
     }
@@ -290,6 +293,7 @@ export default function Packaging() {
               <Table.Th>{t('packaging.name')}</Table.Th>
               <Table.Th>{t('packaging.images')}</Table.Th>
               <Table.Th>{t('packaging.amount')}</Table.Th>
+              <Table.Th>{t('packaging.giftType')}</Table.Th>
               <Table.Th>{t('common.status')}</Table.Th>
               <Table.Th>{t('common.date')}</Table.Th>
               <Table.Th>{t('common.actions')}</Table.Th>
@@ -332,6 +336,11 @@ export default function Packaging() {
                 </Table.Td>
                 <Table.Td>
                   <div className="font-medium text-gray-900">{packaging.amount} SAR</div>
+                </Table.Td>
+                <Table.Td>
+                  <Badge color={packaging.giftType === 'money' ? 'blue' : 'green'}>
+                    {t(`packaging.giftTypeOptions.${packaging.giftType}`)}
+                  </Badge>
                 </Table.Td>
                 <Table.Td>
                   {getStatusBadge(packaging.status)}
@@ -437,6 +446,21 @@ export default function Packaging() {
               placeholder="35.0"
               required
             />
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {t('packaging.giftType')}
+              </label>
+              <select
+                value={formData.giftType}
+                onChange={(e) => setFormData({ ...formData, giftType: e.target.value as PackagingType['giftType'] })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                required
+              >
+                <option value="gift">{t('packaging.giftTypeOptions.gift')}</option>
+                <option value="money">{t('packaging.giftTypeOptions.money')}</option>
+              </select>
+            </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">

@@ -139,7 +139,6 @@
     "occasionUpdated": "Occasion updated successfully",
     "occasionCreated": "Occasion created successfully",
     "owner": "Owner",
-    "details": "Occasion Details",
     "toggle": "Toggle",
     "count": "Count",
     "details": {
@@ -475,20 +474,28 @@
     "add": "Add New Tax",
     "edit": "Edit Tax",
     "delete": "Delete Tax",
-    "searchPlaceholder": "Search taxes...",
+    "configureTax": "Configure Tax",
+    "category": "Tax Category",
     "name": "Tax Name",
     "namePlaceholder": "Service Tax",
     "type": "Tax Type",
-    "amount": "Tax Amount (%)",
+    "amount": "Tax Amount",
     "statistics": "Tax Statistics",
     "totalTaxes": "Total Taxes",
     "breakdown": "Tax Breakdown",
     "byType": "By Type",
-    "types": {
+    "noTaxConfigured": "No tax configured for this category",
+    "categories": {
       "service": "Service Tax",
       "delivery": "Delivery Tax",
-      "packaging": "Packaging Tax",
-      "custom": "Custom Tax"
+      "custom": "Custom Tax",
+      "serviceDescription": "Tax applied to service fees",
+      "deliveryDescription": "Tax applied to delivery charges",
+      "customDescription": "Custom tax for specific purposes"
+    },
+    "types": {
+      "percent": "Percentage",
+      "amount": "Fixed Amount"
     },
     "deleteConfirm": "Are you sure you want to delete this tax?",
     "taxCreated": "Tax created successfully",
@@ -505,6 +512,11 @@
     "namePlaceholder": "Premium Gift Box",
     "images": "Images",
     "amount": "Amount (SAR)",
+    "giftType": "Gift Type",
+    "giftTypeOptions": {
+      "gift": "Gift",
+      "money": "Money"
+    },
     "statistics": "Packaging Statistics",
     "totalPackaging": "Total Packaging",
     "totalAmount": "Total Amount",

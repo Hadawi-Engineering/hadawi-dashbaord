@@ -328,8 +328,10 @@ export interface TaxConfig {
 export interface Tax {
   id: string;
   name: string;
-  type: 'service' | 'delivery' | 'packaging' | 'custom';
+  category: 'service' | 'delivery' | 'custom';
+  type: 'percent' | 'amount';
   amount: number;
+  status: 'active' | 'inactive';
   createdAt: string;
   updatedAt: string;
 }
@@ -348,6 +350,7 @@ export interface PackagingType {
   name: string;
   images: string[];
   amount: number;
+  giftType: 'money' | 'gift';
   status: 'active' | 'inactive' | 'archived';
   createdAt: string;
   updatedAt: string;
