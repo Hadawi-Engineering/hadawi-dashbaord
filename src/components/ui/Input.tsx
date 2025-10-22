@@ -6,7 +6,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   error?: string;
 }
 
-export default function Input({ label, error, className, ...props }: InputProps) {
+export function Input({ label, error, className, ...props }: InputProps) {
   return (
     <div className="w-full">
       {label && (
@@ -31,4 +31,6 @@ export default function Input({ label, error, className, ...props }: InputProps)
     </div>
   );
 }
+
+export default Input;
 

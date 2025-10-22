@@ -373,6 +373,114 @@ export interface BulkNotification {
   data?: Record<string, any>;
 }
 
+// Notification Template Types
+export interface NotificationTemplate {
+  id: string;
+  name: string;
+  description: string;
+  trigger: NotificationTrigger;
+  title: string;
+  body: string;
+  imageUrl?: string;
+  data?: Record<string, any>;
+  isDefault: boolean;
+  status: 'active' | 'inactive' | 'draft';
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type NotificationTrigger = 
+  | 'payment_received'
+  | 'occasion_completed'
+  | 'occasion_created'
+  | 'payment_reminder';
+
+export interface NotificationTemplateCreate {
+  name: string;
+  description: string;
+  trigger: NotificationTrigger;
+  title: string;
+  body: string;
+  imageUrl?: string;
+  data?: Record<string, any>;
+  isDefault?: boolean;
+  status?: 'active' | 'inactive' | 'draft';
+}
+
+export interface NotificationTemplateUpdate {
+  name?: string;
+  description?: string;
+  title?: string;
+  body?: string;
+  imageUrl?: string;
+  data?: Record<string, any>;
+  isDefault?: boolean;
+  status?: 'active' | 'inactive' | 'draft';
+}
+
+// Notification Sending Types
+export interface NotificationSend {
+  userIds: string[];
+  title: string;
+  body: string;
+  imageUrl?: string;
+  data?: Record<string, any>;
+  scheduledAt?: string;
+}
+
+export interface NotificationTriggerRequest {
+  userIds: string[];
+  variables: Record<string, string>;
+}
+
+// Notification Analytics Types
+export interface NotificationStats {
+  totalTemplates: number;
+  activeTemplates: number;
+  defaultTemplates: number;
+  triggers: Record<NotificationTrigger, number>;
+}
+
+export interface NotificationHistory {
+  id: string;
+  title: string;
+  body: string;
+  userIds: string[];
+  sentAt: string;
+  status: 'sent' | 'failed' | 'pending' | 'cancelled';
+  templateId?: string;
+  scheduledAt?: string;
+}
+
+// Template Variables
+export interface TemplateVariables {
+  payment_received: {
+    occasionName: string;
+    amount: string;
+    payerName: string;
+    occasionId: string;
+    occasionType: string;
+  };
+  occasion_completed: {
+    occasionName: string;
+    totalAmount: string;
+    occasionId: string;
+    completionDate: string;
+  };
+  occasion_created: {
+    occasionName: string;
+    occasionType: string;
+    occasionId: string;
+    creatorName: string;
+  };
+  payment_reminder: {
+    occasionName: string;
+    remainingAmount: string;
+    occasionId: string;
+    daysLeft: string;
+  };
+}
+
 // Pagination Types
 export interface PaginationParams {
   page?: number;

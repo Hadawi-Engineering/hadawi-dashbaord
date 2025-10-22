@@ -20,7 +20,8 @@ import {
   X,
   Languages,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  Bell
 } from 'lucide-react';
 import adminService from '../services/adminService';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -56,6 +57,7 @@ export default function Layout() {
     { path: '/payments', icon: CreditCard, label: t('nav.payments') },
     { path: '/promo-codes', icon: Tag, label: t('nav.promoCodes') },
     { path: '/banners', icon: Image, label: t('nav.banners') },
+    { path: '/notifications', icon: Bell, label: t('nav.notifications') },
         { path: '/withdrawals', icon: Wallet, label: t('nav.withdrawals') },
         { path: '/delivery-partners', icon: Truck, label: t('nav.deliveryPartners') },
         { path: '/delivery-records', icon: Package, label: t('nav.deliveryRecords') },

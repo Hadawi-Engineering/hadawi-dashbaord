@@ -5,12 +5,12 @@ import Card from './Card';
 interface StatCardProps {
   title: string;
   value: string | number;
-  icon: LucideIcon;
+  icon: LucideIcon | string;
   change?: string;
   trend?: 'up' | 'down' | 'neutral';
 }
 
-export default function StatCard({ title, value, icon: Icon, change, trend = 'neutral' }: StatCardProps) {
+export function StatCard({ title, value, icon: Icon, change, trend = 'neutral' }: StatCardProps) {
   const trendColors = {
     up: 'text-green-600',
     down: 'text-red-600',
@@ -30,10 +30,16 @@ export default function StatCard({ title, value, icon: Icon, change, trend = 'ne
           )}
         </div>
         <div className="p-3 bg-primary-50 rounded-lg">
-          <Icon className="w-8 h-8 text-primary-600" />
+          {typeof Icon === 'string' ? (
+            <span className="text-2xl">{Icon}</span>
+          ) : (
+            <Icon className="w-8 h-8 text-primary-600" />
+          )}
         </div>
       </div>
     </Card>
   );
 }
+
+export default StatCard;
 

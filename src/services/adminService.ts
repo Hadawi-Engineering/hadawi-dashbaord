@@ -4,8 +4,6 @@ import type {
   LoginResponse,
   User,
   Occasion,
-  OccasionDetails,
-  OccasionPayment,
   OccasionPaymentsResponse,
   Payment,
   PaymentStats,
@@ -32,9 +30,15 @@ import type {
   PackagingType,
   PackagingStatistics,
   BulkNotification,
+  NotificationTemplate,
+  NotificationTemplateCreate,
+  NotificationTemplateUpdate,
+  NotificationSend,
+  NotificationTriggerRequest,
+  NotificationStats,
+  NotificationHistory,
+  NotificationTrigger,
   PaginationParams,
-  PaginationResponse,
-  ApiResponse,
   CloudinaryUploadSignature,
   CloudinaryUploadSignatureRequest,
   SmsBalance,
@@ -581,6 +585,64 @@ class AdminService {
 
   async getSmsBalance(): Promise<SmsBalance> {
     const { data } = await this.api.get<SmsBalance>('/auth/sms-balance');
+    return data;
+  }
+
+  // ==================== NOTIFICATION TEMPLATES ====================
+
+  async getNotificationTemplates(params: { trigger?: NotificationTrigger } = {}): Promise<NotificationTemplate[]> {
+    const { data } = await this.api.get<NotificationTemplate[]>('/notifications/dashboard/templates', { params });
+    console.log(data);
+    return data;
+  }
+
+  async getNotificationTemplate(id: string): Promise<NotificationTemplate> {
+    const { data } = await this.api.get<NotificationTemplate>(`/notifications/dashboard/templates/${id}`);
+    return data;
+  }
+
+  async createNotificationTemplate(templateData: NotificationTemplateCreate): Promise<NotificationTemplate> {
+    const { data } = await this.api.post<NotificationTemplate>('/notifications/dashboard/templates', templateData);
+    return data;
+  }
+
+  async updateNotificationTemplate(id: string, templateData: NotificationTemplateUpdate): Promise<NotificationTemplate> {
+    const { data } = await this.api.put<NotificationTemplate>(`/notifications/dashboard/templates/${id}`, templateData);
+    return data;
+  }
+
+  async setTemplateAsDefault(id: string): Promise<NotificationTemplate> {
+    const { data } = await this.api.post<NotificationTemplate>(`/notifications/dashboard/templates/${id}/set-default`);
+    return data;
+  }
+
+  async deleteNotificationTemplate(id: string): Promise<void> {
+    await this.api.delete(`/notifications/dashboard/templates/${id}`);
+  }
+
+  async initializeDefaultTemplates(): Promise<void> {
+    await this.api.post('/notifications/dashboard/templates/initialize');
+  }
+
+  // ==================== NOTIFICATION SENDING ====================
+
+  async sendCustomNotification(notificationData: NotificationSend): Promise<void> {
+    await this.api.post('/notifications/dashboard/send', notificationData);
+  }
+
+  async triggerEventNotification(trigger: NotificationTrigger, requestData: NotificationTriggerRequest): Promise<void> {
+    await this.api.post(`/notifications/dashboard/trigger/${trigger}`, requestData);
+  }
+
+  // ==================== NOTIFICATION ANALYTICS ====================
+
+  async getNotificationStats(): Promise<NotificationStats> {
+    const { data } = await this.api.get<NotificationStats>('/notifications/dashboard/stats');
+    return data;
+  }
+
+  async getNotificationHistory(params: PaginationParams = {}): Promise<NotificationHistory[]> {
+    const { data } = await this.api.get<NotificationHistory[]>('/notifications/dashboard/history', { params });
     return data;
   }
 }

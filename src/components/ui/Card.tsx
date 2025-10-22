@@ -6,7 +6,7 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   className?: string;
 }
 
-export default function Card({ children, className, ...props }: CardProps) {
+export function Card({ children, className, ...props }: CardProps) {
   return (
     <div
       className={clsx(
@@ -19,4 +19,6 @@ export default function Card({ children, className, ...props }: CardProps) {
     </div>
   );
 }
+
+export default Card;
 

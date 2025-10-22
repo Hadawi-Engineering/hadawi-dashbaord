@@ -7,7 +7,7 @@ interface TableProps extends React.TableHTMLAttributes<HTMLTableElement> {
   loading?: boolean;
 }
 
-export default function Table({ children, loading, className, ...props }: TableProps) {
+export function Table({ children, loading, className, ...props }: TableProps) {
   const { t, isRTL } = useLanguage();
   
   if (loading) {
@@ -108,4 +108,6 @@ Table.Td = function TableTd({ children, className, ...props }: TableTdProps) {
     </td>
   );
 };
+
+export default Table;
 
