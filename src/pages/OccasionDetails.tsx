@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, Calendar, DollarSign, Users, TrendingUp, CheckCircle, Clock, XCircle, Truck } from 'lucide-react';
+import { ArrowLeft, Calendar, DollarSign, Users, TrendingUp, CheckCircle, Clock, XCircle, Truck, Gift, ExternalLink } from 'lucide-react';
 import adminService from '../services/adminService';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
-import Table from '../components/ui/Table';
 import DeliveryDetailsModal from '../components/DeliveryDetailsModal';
 import { useLanguage } from '../contexts/LanguageContext';
 
@@ -64,7 +63,7 @@ export default function OccasionDetails() {
       pending: { color: 'yellow', text: t('payments.pending') },
       failed: { color: 'red', text: t('payments.failed') },
     };
-    
+
     const statusInfo = statusMap[status as keyof typeof statusMap] || { color: 'gray', text: status };
     return <Badge color={statusInfo.color as any}>{statusInfo.text}</Badge>;
   };
@@ -194,6 +193,65 @@ export default function OccasionDetails() {
         </Card>
       </div>
 
+      {/* Gift Details */}
+      {(occasion.giftName || occasion.giftDescription || occasion.giftImages?.length || occasion.giftLink) && (
+        <Card>
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 bg-pink-100 rounded-lg">
+              <Gift className="w-6 h-6 text-pink-600" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900">{t('occasions.details.giftDetails')}</h3>
+          </div>
+
+          <div className="space-y-4">
+            {occasion.giftName && (
+              <div>
+                <p className="text-sm text-gray-600 mb-1">{t('occasions.details.giftName')}</p>
+                <p className="font-medium text-gray-900">{occasion.giftName}</p>
+              </div>
+            )}
+
+            {occasion.giftDescription && (
+              <div>
+                <p className="text-sm text-gray-600 mb-1">{t('occasions.details.giftDescription')}</p>
+                <p className="text-gray-900">{occasion.giftDescription}</p>
+              </div>
+            )}
+
+            {occasion.giftImages && occasion.giftImages.length > 0 && (
+              <div>
+                <p className="text-sm text-gray-600 mb-2">{t('occasions.details.giftImages')}</p>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                  {occasion.giftImages.map((image, index) => (
+                    <img
+                      key={index}
+                      src={image}
+                      alt={`${occasion.giftName || 'Gift'} ${index + 1}`}
+                      className="w-full h-32 object-cover rounded-lg border border-gray-200 hover:shadow-md transition-shadow"
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {occasion.giftLink && (
+              <div>
+                <p className="text-sm text-gray-600 mb-1">{t('occasions.details.giftLink')}</p>
+                <a
+                  href={occasion.giftLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 font-medium"
+                >
+                  {occasion.giftLink}
+                  <ExternalLink size={16} />
+                </a>
+              </div>
+            )}
+          </div>
+        </Card>
+      )}
+
       {/* Progress and Status */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
@@ -205,7 +263,7 @@ export default function OccasionDetails() {
                 <span>{summary.completionPercentage}</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
+                <div
                   className="bg-primary-600 h-2 rounded-full transition-all duration-300"
                   style={{ width: summary.completionPercentage }}
                 />
@@ -255,7 +313,7 @@ export default function OccasionDetails() {
             {t('occasions.details.totalPayments')}: {payments.length}
           </div>
         </div>
-        
+
         {payments.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">

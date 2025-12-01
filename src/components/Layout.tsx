@@ -1,27 +1,29 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import type { LucideIcon } from 'lucide-react';
-import { 
-  LayoutDashboard, 
-  Users, 
-  Calendar, 
+import {
+  LayoutDashboard,
+  Users,
+  Calendar,
   CalendarDays,
-  CreditCard, 
-  Tag, 
-  Image, 
-  Wallet, 
-  Truck, 
+  CreditCard,
+  Tag,
+  Image,
+  Wallet,
+  Truck,
   Calculator,
   Package,
-  BarChart3, 
-  Settings, 
+  BarChart3,
+  Settings,
   LogOut,
   Menu,
   X,
   Languages,
   ChevronDown,
   ChevronRight,
-  Bell
+  Bell,
+  Building2,
+  Percent
 } from 'lucide-react';
 import adminService from '../services/adminService';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -58,12 +60,14 @@ export default function Layout() {
     { path: '/promo-codes', icon: Tag, label: t('nav.promoCodes') },
     { path: '/banners', icon: Image, label: t('nav.banners') },
     { path: '/notifications', icon: Bell, label: t('nav.notifications') },
-        { path: '/withdrawals', icon: Wallet, label: t('nav.withdrawals') },
-        { path: '/delivery-partners', icon: Truck, label: t('nav.deliveryPartners') },
-        { path: '/delivery-records', icon: Package, label: t('nav.deliveryRecords') },
-    { 
-      path: '/configuration', 
-      icon: Settings, 
+    { path: '/companies', icon: Building2, label: t('companies.title') },
+    { path: '/offers', icon: Percent, label: t('offers.title') },
+    { path: '/withdrawals', icon: Wallet, label: t('nav.withdrawals') },
+    { path: '/delivery-partners', icon: Truck, label: t('nav.deliveryPartners') },
+    { path: '/delivery-records', icon: Package, label: t('nav.deliveryRecords') },
+    {
+      path: '/configuration',
+      icon: Settings,
       label: t('nav.configuration'),
       children: [
         { path: '/occasion-types', icon: CalendarDays, label: t('nav.occasionTypes') },
@@ -81,17 +85,16 @@ export default function Layout() {
     <div className="min-h-screen bg-gray-50">
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 ${isRTL ? 'right-0' : 'left-0'} z-40 w-64 h-screen transition-transform ${
-          sidebarOpen ? 'translate-x-0' : isRTL ? 'translate-x-full' : '-translate-x-full'
-        } md:translate-x-0 bg-white ${isRTL ? 'border-l' : 'border-r'} border-gray-200`}
+        className={`fixed top-0 ${isRTL ? 'right-0' : 'left-0'} z-40 w-64 h-screen transition-transform ${sidebarOpen ? 'translate-x-0' : isRTL ? 'translate-x-full' : '-translate-x-full'
+          } md:translate-x-0 bg-white ${isRTL ? 'border-l' : 'border-r'} border-gray-200`}
       >
         <div className="h-full px-3 py-4 overflow-y-auto">
           {/* Logo */}
           <div className="mb-8 px-4">
             <div className="flex items-center gap-3 mb-2">
-              <img 
-                src="https://www.hadawi.sa/assets/images/hadawi.png" 
-                alt="Hadawi Logo" 
+              <img
+                src="https://www.hadawi.sa/assets/images/hadawi.png"
+                alt="Hadawi Logo"
                 className="h-8 w-auto"
               />
               <h1 className="text-2xl font-bold text-primary-600">Hadawi</h1>
@@ -105,17 +108,16 @@ export default function Layout() {
               const hasChildren = item.children && item.children.length > 0;
               const isConfigItem = item.path === '/configuration';
               const isConfigActive = isConfigItem && (location.pathname === '/occasion-types' || location.pathname === '/taxes' || location.pathname === '/packaging');
-              
+
               if (hasChildren) {
                 return (
                   <div key={item.path}>
                     <button
                       onClick={() => setConfigOpen(!configOpen)}
-                      className={`flex items-center justify-between w-full px-4 py-3 rounded-lg transition-colors ${
-                        isConfigActive
-                          ? 'bg-primary-50 text-primary-700 font-medium'
-                          : 'text-gray-700 hover:bg-gray-50'
-                      }`}
+                      className={`flex items-center justify-between w-full px-4 py-3 rounded-lg transition-colors ${isConfigActive
+                        ? 'bg-primary-50 text-primary-700 font-medium'
+                        : 'text-gray-700 hover:bg-gray-50'
+                        }`}
                     >
                       <div className="flex items-center gap-3">
                         <Icon size={20} />
@@ -127,7 +129,7 @@ export default function Layout() {
                         configOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />
                       )}
                     </button>
-                    
+
                     {configOpen && (
                       <div className={`ml-4 ${isRTL ? 'mr-4' : 'ml-4'} space-y-1`}>
                         {item.children!.map((child) => {
@@ -137,11 +139,10 @@ export default function Layout() {
                               key={child.path}
                               to={child.path}
                               onClick={() => setSidebarOpen(false)}
-                              className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-colors text-sm ${
-                                isActive(child.path)
-                                  ? 'bg-primary-50 text-primary-700 font-medium'
-                                  : 'text-gray-600 hover:bg-gray-50'
-                              }`}
+                              className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-colors text-sm ${isActive(child.path)
+                                ? 'bg-primary-50 text-primary-700 font-medium'
+                                : 'text-gray-600 hover:bg-gray-50'
+                                }`}
                             >
                               <ChildIcon size={16} />
                               <span>{child.label}</span>
@@ -153,17 +154,16 @@ export default function Layout() {
                   </div>
                 );
               }
-              
+
               return (
                 <Link
                   key={item.path}
                   to={item.path}
                   onClick={() => setSidebarOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                    isActive(item.path)
-                      ? 'bg-primary-50 text-primary-700 font-medium'
-                      : 'text-gray-700 hover:bg-gray-50'
-                  }`}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive(item.path)
+                    ? 'bg-primary-50 text-primary-700 font-medium'
+                    : 'text-gray-700 hover:bg-gray-50'
+                    }`}
                 >
                   <Icon size={20} />
                   <span>{item.label}</span>
@@ -187,7 +187,7 @@ export default function Layout() {
                 <p className="text-xs text-gray-500">{admin?.role || 'Admin'}</p>
               </div>
             </div>
-            
+
             {/* Language Switcher */}
             <button
               onClick={toggleLanguage}
@@ -196,7 +196,7 @@ export default function Layout() {
               <Languages size={16} />
               <span>{language === 'ar' ? 'English' : 'العربية'}</span>
             </button>
-            
+
             <button
               onClick={handleLogout}
               className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"

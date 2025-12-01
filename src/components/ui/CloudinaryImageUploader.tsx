@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { Upload, X, Image as ImageIcon, AlertCircle, CheckCircle } from 'lucide-react';
+import { Upload, X, AlertCircle } from 'lucide-react';
 import adminService from '../../services/adminService';
 import { defaultUploadOptions } from '../../config/cloudinary';
 import { CloudinaryUploadResponse, CloudinaryUploadError, CloudinaryUploadSignatureRequest } from '../../types';
@@ -38,7 +38,7 @@ export default function CloudinaryImageUploader({
   onRemove,
   uploadOptions = {}
 }: CloudinaryImageUploaderProps) {
-  const { t, isRTL } = useLanguage();
+  const { t } = useLanguage();
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
   const [uploadErrors, setUploadErrors] = useState<Record<string, string>>({});
@@ -57,19 +57,6 @@ export default function CloudinaryImageUploader({
 
   const uploadToCloudinary = async (file: File): Promise<string> => {
     try {
-      // For now, use a simple data URL approach until signature issue is resolved
-      console.log('Using fallback upload method for file:', file.name);
-      
-      // Create a data URL for immediate preview
-      return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          resolve(e.target?.result as string);
-        };
-        reader.readAsDataURL(file);
-      });
-      
-      /* TODO: Re-enable when signature issue is fixed
       // Get upload signature from backend
       const signatureRequest: CloudinaryUploadSignatureRequest = {
         folder: uploadOptions.folder || defaultUploadOptions.folder,
@@ -85,26 +72,23 @@ export default function CloudinaryImageUploader({
       formData.append('timestamp', signatureData.timestamp.toString());
       formData.append('api_key', signatureData.apiKey);
       formData.append('folder', signatureData.folder);
-      formData.append('resource_type', 'image');
-      
-      // Use the transformation exactly as provided by backend
-      const transformation = [
-        `w_${signatureData.transformation.width}`,
-        `h_${signatureData.transformation.height}`,
-        `c_${signatureData.transformation.crop}`,
-        `q_${signatureData.transformation.quality}`,
-        `f_${signatureData.transformation.fetch_format || 'auto'}`
-      ].join(',');
-      
-      formData.append('transformation', transformation);
 
-      // Debug logging
-      console.log('Upload Signature Data:', signatureData);
-      console.log('Form Data Entries:', Array.from(formData.entries()));
+      // Use the transformation exactly as provided by backend
+      if (signatureData.transformation) {
+        const transformation = [
+          `w_${signatureData.transformation.width}`,
+          `h_${signatureData.transformation.height}`,
+          `c_${signatureData.transformation.crop}`,
+          `q_${signatureData.transformation.quality}`,
+          `f_${signatureData.transformation.fetch_format || 'auto'}`
+        ].join(',');
+
+        formData.append('transformation', transformation);
+      }
 
       // Upload to Cloudinary
       const uploadUrl = `https://api.cloudinary.com/v1_1/${signatureData.cloudName}/image/upload`;
-      
+
       const response = await fetch(uploadUrl, {
         method: 'POST',
         body: formData,
@@ -118,17 +102,9 @@ export default function CloudinaryImageUploader({
 
       const result: CloudinaryUploadResponse = await response.json();
       return result.secure_url;
-      */
     } catch (error) {
       console.error('Upload failed:', error);
-      // Fallback: Create a data URL for testing
-      return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          resolve(e.target?.result as string);
-        };
-        reader.readAsDataURL(file);
-      });
+      throw error;
     }
   };
 
@@ -139,7 +115,7 @@ export default function CloudinaryImageUploader({
     const totalFiles = existingImages.length + fileArray.length;
 
     if (totalFiles > maxFiles) {
-      onError?.(t('banners.maxFilesExceeded', { max: maxFiles }));
+      onError?.(t('banners.maxFilesExceeded').replace('{{max}}', maxFiles.toString()));
       return;
     }
 
@@ -148,7 +124,7 @@ export default function CloudinaryImageUploader({
 
     const uploadPromises = fileArray.map(async (file, index) => {
       const fileId = `${file.name}-${index}`;
-      
+
       // Validate file
       const validationError = validateFile(file);
       if (validationError) {
@@ -158,7 +134,7 @@ export default function CloudinaryImageUploader({
 
       try {
         setUploadProgress(prev => ({ ...prev, [fileId]: 0 }));
-        
+
         // Simulate progress (Cloudinary doesn't provide real-time progress)
         const progressInterval = setInterval(() => {
           setUploadProgress(prev => ({
@@ -168,10 +144,10 @@ export default function CloudinaryImageUploader({
         }, 100);
 
         const url = await uploadToCloudinary(file);
-        
+
         clearInterval(progressInterval);
         setUploadProgress(prev => ({ ...prev, [fileId]: 100 }));
-        
+
         return url;
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : t('banners.uploadError');
@@ -183,7 +159,7 @@ export default function CloudinaryImageUploader({
     try {
       const results = await Promise.all(uploadPromises);
       const successfulUploads = results.filter((url): url is string => url !== null);
-      
+
       if (successfulUploads.length > 0) {
         onUpload([...existingImages, ...successfulUploads]);
       }
@@ -209,9 +185,9 @@ export default function CloudinaryImageUploader({
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    
+
     if (disabled) return;
-    
+
     const files = e.dataTransfer.files;
     if (files && files.length > 0) {
       handleFileUpload(files);
@@ -261,7 +237,7 @@ export default function CloudinaryImageUploader({
           className="hidden"
           disabled={disabled}
         />
-        
+
         <div className="space-y-2">
           <Upload className={`mx-auto h-12 w-12 ${dragActive ? 'text-primary-500' : 'text-gray-400'}`} />
           <div>

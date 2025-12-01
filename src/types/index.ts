@@ -51,6 +51,10 @@ export interface OccasionDetails {
   totalPaid: number;
   remainingAmount: number;
   isFullyPaid: boolean;
+  giftName?: string;
+  giftDescription?: string;
+  giftImages?: string[];
+  giftLink?: string;
 }
 
 export interface OccasionPayment {
@@ -389,7 +393,7 @@ export interface NotificationTemplate {
   updatedAt: string;
 }
 
-export type NotificationTrigger = 
+export type NotificationTrigger =
   | 'payment_received'
   | 'occasion_completed'
   | 'occasion_created'
@@ -653,3 +657,32 @@ export interface SmsBalance {
   credits: number;
 }
 
+
+// Company Types
+export interface Company {
+  id: string;
+  name: string;
+  description?: string;
+  websiteUrl?: string;
+  logoUrl?: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Offer Types
+export interface Offer {
+  id: string;
+  title: string;
+  description?: string;
+  discount: string;
+  companyId: string;
+  company?: Company;
+  imageUrl?: string;
+  promoCode?: string;
+  validFrom?: string;
+  validUntil?: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}

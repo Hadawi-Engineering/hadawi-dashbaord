@@ -15,6 +15,8 @@ import DeliveryPartners from './pages/DeliveryPartners';
 import Taxes from './pages/Taxes';
 import Packaging from './pages/Packaging';
 import DeliveryRecords from './pages/DeliveryRecords';
+import Companies from './pages/Companies';
+import Offers from './pages/Offers';
 import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
 import Layout from './components/Layout';
@@ -24,26 +26,28 @@ function App() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
-      
-          <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
-            <Route index element={<Navigate to="/dashboard" replace />} />
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="users" element={<Users />} />
-            <Route path="occasions" element={<Occasions />} />
-            <Route path="occasions/:occasionId" element={<OccasionDetails />} />
-            <Route path="occasion-types" element={<OccasionTypes />} />
-            <Route path="payments" element={<Payments />} />
-            <Route path="promo-codes" element={<PromoCodes />} />
-            <Route path="banners" element={<Banners />} />
-            <Route path="notifications" element={<Notifications />} />
-            <Route path="withdrawals" element={<Withdrawals />} />
-                <Route path="delivery-partners" element={<DeliveryPartners />} />
-                <Route path="delivery-records" element={<DeliveryRecords />} />
-                <Route path="taxes" element={<Taxes />} />
-                <Route path="packaging" element={<Packaging />} />
-                <Route path="analytics" element={<Analytics />} />
-                <Route path="settings" element={<Settings />} />
-          </Route>
+
+      <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+        <Route index element={<Navigate to="/dashboard" replace />} />
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="users" element={<Users />} />
+        <Route path="occasions" element={<Occasions />} />
+        <Route path="occasions/:occasionId" element={<OccasionDetails />} />
+        <Route path="occasion-types" element={<OccasionTypes />} />
+        <Route path="payments" element={<Payments />} />
+        <Route path="promo-codes" element={<PromoCodes />} />
+        <Route path="banners" element={<Banners />} />
+        <Route path="notifications" element={<Notifications />} />
+        <Route path="withdrawals" element={<Withdrawals />} />
+        <Route path="delivery-partners" element={<DeliveryPartners />} />
+        <Route path="delivery-records" element={<DeliveryRecords />} />
+        <Route path="taxes" element={<Taxes />} />
+        <Route path="packaging" element={<Packaging />} />
+        <Route path="companies" element={<Companies />} />
+        <Route path="offers" element={<Offers />} />
+        <Route path="analytics" element={<Analytics />} />
+        <Route path="settings" element={<Settings />} />
+      </Route>
     </Routes>
   );
 }

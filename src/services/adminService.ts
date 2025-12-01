@@ -42,6 +42,8 @@ import type {
   CloudinaryUploadSignature,
   CloudinaryUploadSignatureRequest,
   SmsBalance,
+  Company,
+  Offer,
 } from '../types';
 
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
@@ -94,11 +96,11 @@ class AdminService {
       email,
       password,
     });
-    
+
     localStorage.setItem('admin_token', data.token);
     localStorage.setItem('admin_refresh_token', data.refreshToken);
     localStorage.setItem('admin_user', JSON.stringify(data.admin));
-    
+
     return data;
   }
 
@@ -107,10 +109,10 @@ class AdminService {
     const { data } = await this.api.post<LoginResponse>('/auth/refresh-token', {
       refreshToken,
     });
-    
+
     localStorage.setItem('admin_token', data.token);
     localStorage.setItem('admin_refresh_token', data.refreshToken);
-    
+
     return data;
   }
 
@@ -534,7 +536,7 @@ class AdminService {
     files.forEach(file => {
       formData.append('files', file);
     });
-    
+
     const { data } = await this.api.post<DeliveryImageUploadResponse>(
       `/delivery-records/${id}/upload-gift-images`,
       formData,
@@ -552,7 +554,7 @@ class AdminService {
     files.forEach(file => {
       formData.append('files', file);
     });
-    
+
     const { data } = await this.api.post<DeliveryImageUploadResponse>(
       `/delivery-records/${id}/upload-receipt-images`,
       formData,
@@ -634,6 +636,11 @@ class AdminService {
     await this.api.post(`/notifications/dashboard/trigger/${trigger}`, requestData);
   }
 
+  async sendInactiveUserReminder(daysInactive: number, adminId: string): Promise<{ count: number }> {
+    const { data } = await this.api.post<{ count: number }>('/notifications/dashboard/send-inactive-reminder', { daysInactive, adminId });
+    return data;
+  }
+
   // ==================== NOTIFICATION ANALYTICS ====================
 
   async getNotificationStats(): Promise<NotificationStats> {
@@ -644,6 +651,48 @@ class AdminService {
   async getNotificationHistory(params: PaginationParams = {}): Promise<NotificationHistory[]> {
     const { data } = await this.api.get<NotificationHistory[]>('/notifications/dashboard/history', { params });
     return data;
+  }
+
+  // ==================== COMPANIES ====================
+
+  async getCompanies(): Promise<Company[]> {
+    const { data } = await this.api.get<Company[]>('/companies');
+    return data;
+  }
+
+  async createCompany(companyData: Omit<Company, 'id' | 'createdAt' | 'updatedAt'>): Promise<Company> {
+    const { data } = await this.api.post<Company>('/companies', companyData);
+    return data;
+  }
+
+  async updateCompany(id: string, companyData: Partial<Company>): Promise<Company> {
+    const { data } = await this.api.patch<Company>(`/companies/${id}`, companyData);
+    return data;
+  }
+
+  async deleteCompany(id: string): Promise<void> {
+    await this.api.delete(`/companies/${id}`);
+  }
+
+  // ==================== OFFERS ====================
+
+  async getOffers(): Promise<Offer[]> {
+    const { data } = await this.api.get<Offer[]>('/offers');
+    return data;
+  }
+
+  async createOffer(offerData: Omit<Offer, 'id' | 'createdAt' | 'updatedAt'>): Promise<Offer> {
+    const { data } = await this.api.post<Offer>('/offers', offerData);
+    return data;
+  }
+
+  async updateOffer(id: string, offerData: Partial<Offer>): Promise<Offer> {
+    const { data } = await this.api.patch<Offer>(`/offers/${id}`, offerData);
+    return data;
+  }
+
+  async deleteOffer(id: string): Promise<void> {
+    await this.api.delete(`/offers/${id}`);
   }
 }
 

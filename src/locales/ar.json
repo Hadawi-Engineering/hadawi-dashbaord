@@ -44,6 +44,8 @@
     "analytics": "التحليلات",
     "configuration": "التكوين",
     "settings": "الإعدادات",
+    "companies": "الشركات",
+    "offers": "العروض",
     "logout": "تسجيل الخروج"
   },
   "login": {
@@ -158,6 +160,11 @@
       "failedPayments": "المدفوعات الفاشلة",
       "payments": "المدفوعات",
       "noPayments": "لا توجد مدفوعات لهذه المناسبة",
+      "giftDetails": "تفاصيل الهدية",
+      "giftName": "اسم الهدية",
+      "giftDescription": "الوصف",
+      "giftImages": "صور الهدية",
+      "giftLink": "رابط الهدية",
       "error": "خطأ في تحميل تفاصيل المناسبة"
     }
   },
@@ -230,7 +237,6 @@
     "filterAll": "الكل",
     "filterActive": "نشط",
     "filterInactive": "غير نشط",
-
     "titleEnglish": "العنوان (إنجليزي)",
     "titleEnglishPlaceholder": "عرض خاص",
     "titleArabic": "اسم اللافتة (عربي)",
@@ -596,7 +602,7 @@
     "count": "عدد"
   },
   "notifications": {
-    "title": "الإشعارات",
+    "pageTitle": "الإشعارات",
     "notificationManagementDescription": "إدارة قوالب الإشعارات وإرسال الإشعارات وعرض التحليلات",
     "templates": "القوالب",
     "send": "إرسال",
@@ -646,7 +652,35 @@
     "scheduleFor": "جدولة لـ",
     "selectTrigger": "اختر المحفز",
     "selectedUsers": "المستخدمون المحددون",
-    "send": "إرسال",
-    "trigger": "تشغيل"
+    "triggerAction": "تشغيل",
+    "inactiveReminders": "تذكيرات المستخدمين غير النشطين",
+    "inactiveRemindersDescription": "إرسال إشعارات للمستخدمين الذين لم يفتحوا التطبيق لفترة",
+    "daysInactive": "أيام عدم النشاط",
+    "sendReminders": "إرسال التذكيرات",
+    "remindersSentSuccess": "تم إرسال التذكيرات إلى {{count}} مستخدم"
+  },
+  "companies": {
+    "title": "الشركات",
+    "add": "إضافة شركة",
+    "edit": "تعديل شركة",
+    "name": "الاسم",
+    "description": "الوصف",
+    "website": "الموقع الإلكتروني",
+    "logo": "رابط الشعار",
+    "deleteConfirm": "هل أنت متأكد من حذف هذه الشركة؟"
+  },
+  "offers": {
+    "title": "العروض",
+    "add": "إضافة عرض",
+    "edit": "تعديل عرض",
+    "offerTitle": "العنوان",
+    "description": "الوصف",
+    "discount": "الخصم",
+    "company": "الشركة",
+    "image": "رابط الصورة",
+    "promoCode": "كود الخصم",
+    "validFrom": "صالح من",
+    "validUntil": "صالح حتى",
+    "deleteConfirm": "هل أنت متأكد من حذف هذا العرض؟"
   }
 }

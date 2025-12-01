@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import adminService from '../services/adminService';
 import { ClipboardList, CheckCircle, Star, Bell } from 'lucide-react';
-import type { 
-  NotificationTemplate, 
-  NotificationStats, 
+import type {
+  NotificationTemplate,
+  NotificationStats,
   NotificationHistory,
   NotificationTrigger,
   NotificationTemplateCreate,
@@ -20,7 +20,7 @@ import { Table } from '../components/ui/Table';
 import { StatCard } from '../components/ui/StatCard';
 
 export default function NotificationsPage() {
-    const { t } = useLanguage();
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<'templates' | 'send' | 'analytics' | 'history'>('templates');
   const [templates, setTemplates] = useState<NotificationTemplate[]>([]);
   const [stats, setStats] = useState<NotificationStats | null>(null);
@@ -28,7 +28,7 @@ export default function NotificationsPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedTrigger, setSelectedTrigger] = useState<NotificationTrigger | ''>('');
-  
+
   // Template Management States
   const [showTemplateModal, setShowTemplateModal] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<NotificationTemplate | null>(null);
@@ -61,6 +61,10 @@ export default function NotificationsPage() {
   const [selectedTriggerForSend, setSelectedTriggerForSend] = useState<NotificationTrigger>('payment_received');
   const [triggerVariables, setTriggerVariables] = useState<Record<string, string>>({});
 
+  // Inactive User Reminders State
+  const [daysInactive, setDaysInactive] = useState(30);
+  const [sendingReminders, setSendingReminders] = useState(false);
+
   useEffect(() => {
     loadData();
   }, [selectedTrigger]);
@@ -74,7 +78,7 @@ export default function NotificationsPage() {
         adminService.getNotificationHistory(),
         adminService.getUsers()
       ]);
-      
+
       setTemplates(templatesData);
       setStats(statsData);
       setHistory(historyData);
@@ -99,7 +103,7 @@ export default function NotificationsPage() {
 
   const handleUpdateTemplate = async () => {
     if (!editingTemplate) return;
-    
+
     try {
       await adminService.updateNotificationTemplate(editingTemplate.id, templateForm);
       setShowTemplateModal(false);
@@ -122,7 +126,7 @@ export default function NotificationsPage() {
 
   const handleDeleteTemplate = async (templateId: string) => {
     if (!confirm('Are you sure you want to delete this template?')) return;
-    
+
     try {
       await adminService.deleteNotificationTemplate(templateId);
       loadData();
@@ -154,6 +158,26 @@ export default function NotificationsPage() {
       loadData();
     } catch (error) {
       console.error('Error triggering notification:', error);
+    }
+  };
+
+  const handleSendInactiveReminders = async () => {
+    if (!confirm(t('notifications.confirmSendReminders'))) return;
+
+    setSendingReminders(true);
+    try {
+      const admin = adminService.getCurrentAdmin();
+      if (!admin) {
+        alert(t('common.error'));
+        return;
+      }
+      const result = await adminService.sendInactiveUserReminder(daysInactive, admin.id);
+      alert(t('notifications.remindersSentSuccess').replace('{{count}}', result.count.toString()));
+    } catch (error) {
+      console.error('Error sending inactive reminders:', error);
+      alert(t('common.error'));
+    } finally {
+      setSendingReminders(false);
     }
   };
 
@@ -318,6 +342,27 @@ export default function NotificationsPage() {
             {t('notifications.triggerEvent')}
           </Button>
         </Card>
+
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold mb-4">{t('notifications.inactiveReminders')}</h3>
+          <p className="text-gray-600 mb-4">{t('notifications.inactiveRemindersDescription')}</p>
+          <div className="flex items-end gap-4">
+            <Input
+              label={t('notifications.daysInactive')}
+              type="number"
+              value={daysInactive}
+              onChange={(e) => setDaysInactive(parseInt(e.target.value) || 0)}
+              min={1}
+            />
+            <Button
+              onClick={handleSendInactiveReminders}
+              loading={sendingReminders}
+              className="mb-1"
+            >
+              {t('notifications.sendReminders')}
+            </Button>
+          </div>
+        </Card>
       </div>
     </div>
   );
@@ -325,7 +370,7 @@ export default function NotificationsPage() {
   const renderAnalyticsTab = () => (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold">{t('notifications.notificationAnalytics')}</h2>
-      
+
       {stats && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
@@ -370,7 +415,7 @@ export default function NotificationsPage() {
   const renderHistoryTab = () => (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold">{t('notifications.notificationHistory')}</h2>
-      
+
       <Card>
         <Table>
           <Table.Head>
@@ -403,7 +448,7 @@ export default function NotificationsPage() {
   return (
     <div className="p-6">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">{t('notifications.title')}</h1>
+        <h1 className="text-3xl font-bold mb-2">{t('notifications.pageTitle')}</h1>
         <p className="text-gray-600">{t('notifications.notificationManagementDescription')}</p>
       </div>
 
@@ -419,11 +464,10 @@ export default function NotificationsPage() {
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key as any)}
-              className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                activeTab === tab.key
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === tab.key
+                ? 'border-blue-500 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
             >
               {tab.label}
             </button>
@@ -462,7 +506,7 @@ export default function NotificationsPage() {
             onChange={(e) => setTemplateForm({ ...templateForm, name: e.target.value })}
             placeholder={t('notifications.enterTemplateName')}
           />
-          
+
           <Input
             label={t('notifications.description')}
             value={templateForm.description}
@@ -703,7 +747,7 @@ export default function NotificationsPage() {
               {t('notifications.cancel')}
             </Button>
             <Button onClick={handleTriggerNotification}>
-              {t('notifications.trigger')}
+              {t('notifications.triggerAction')}
             </Button>
           </div>
         </div>
