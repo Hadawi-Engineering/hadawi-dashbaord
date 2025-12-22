@@ -44,6 +44,14 @@ import type {
   SmsBalance,
   Company,
   Offer,
+  Product,
+  ProductFormData,
+  ProductFilters,
+  ProductsResponse,
+  ProductCategory,
+  CategoryFormData,
+  Brand,
+  BrandFormData,
 } from '../types';
 
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
@@ -693,6 +701,93 @@ class AdminService {
 
   async deleteOffer(id: string): Promise<void> {
     await this.api.delete(`/offers/${id}`);
+  }
+
+  // ==================== PRODUCTS ====================
+
+  async getProducts(params: ProductFilters = {}): Promise<ProductsResponse> {
+    const { data } = await this.api.get<ProductsResponse>('/products', { params });
+    return data;
+  }
+
+  async getFeaturedProducts(limit: number = 10): Promise<Product[]> {
+    const { data } = await this.api.get<Product[]>('/products/featured', { params: { limit } });
+    return data;
+  }
+
+  async getProduct(id: string): Promise<Product> {
+    const { data } = await this.api.get<Product>(`/products/${id}`);
+    return data;
+  }
+
+  async createProduct(productData: ProductFormData): Promise<Product> {
+    const { data } = await this.api.post<Product>('/products', productData);
+    return data;
+  }
+
+  async updateProduct(id: string, productData: Partial<ProductFormData>): Promise<Product> {
+    const { data } = await this.api.patch<Product>(`/products/${id}`, productData);
+    return data;
+  }
+
+  async deleteProduct(id: string): Promise<void> {
+    await this.api.delete(`/products/${id}`);
+  }
+
+  // ==================== PRODUCT CATEGORIES ====================
+
+  async getProductCategories(includeInactive: boolean = false): Promise<ProductCategory[]> {
+    const { data } = await this.api.get<ProductCategory[]>('/product-categories', {
+      params: { includeInactive }
+    });
+    return data;
+  }
+
+  async getProductCategory(id: string): Promise<ProductCategory> {
+    const { data } = await this.api.get<ProductCategory>(`/product-categories/${id}`);
+    return data;
+  }
+
+  async createProductCategory(categoryData: CategoryFormData): Promise<ProductCategory> {
+    const { data } = await this.api.post<ProductCategory>('/product-categories', categoryData);
+    return data;
+  }
+
+  async updateProductCategory(id: string, categoryData: Partial<CategoryFormData>): Promise<ProductCategory> {
+    const { data } = await this.api.patch<ProductCategory>(`/product-categories/${id}`, categoryData);
+    return data;
+  }
+
+  async deleteProductCategory(id: string): Promise<void> {
+    await this.api.delete(`/product-categories/${id}`);
+  }
+
+  // ==================== BRANDS ====================
+
+  async getBrands(includeInactive: boolean = false): Promise<Brand[]> {
+    const { data } = await this.api.get<Brand[]>('/brands', {
+      params: { includeInactive }
+    });
+    return data;
+  }
+
+  async getBrand(id: string): Promise<Brand> {
+    const { data } = await this.api.get<Brand>(`/brands/${id}`);
+    return data;
+  }
+
+  async createBrand(brandData: BrandFormData): Promise<Brand> {
+    const { data } = await this.api.post<Brand>('/brands', brandData);
+    return data;
+  }
+
+  async updateBrand(id: string, brandData: Partial<BrandFormData>): Promise<Brand> {
+    const { data } = await this.api.patch<Brand>(`/brands/${id}`, brandData);
+    return data;
+  }
+
+  async deleteBrand(id: string): Promise<void> {
+    await this.api.delete(`/brands/${id}`);
   }
 }
 

@@ -686,3 +686,167 @@ export interface Offer {
   createdAt: string;
   updatedAt: string;
 }
+
+// Product Catalog Types
+
+// Occasion and Recipient Type Constants
+export const OCCASION_TYPES = [
+  'birthday',
+  'wedding',
+  'anniversary',
+  'graduation',
+  'new_baby',
+  'congratulations',
+  'get_well_soon',
+  'thank_you',
+  'love',
+  'sympathy',
+  'housewarming',
+  'retirement',
+] as const;
+
+export const RECIPIENT_TYPES = [
+  'father',
+  'mother',
+  'husband',
+  'wife',
+  'son',
+  'daughter',
+  'brother',
+  'sister',
+  'grandfather',
+  'grandmother',
+  'friend',
+  'colleague',
+  'boss',
+  'teacher',
+] as const;
+
+export type OccasionType = typeof OCCASION_TYPES[number];
+export type RecipientType = typeof RECIPIENT_TYPES[number];
+
+// Product Category Types
+export interface ProductCategory {
+  id: string;
+  name: string;
+  description?: string;
+  image?: string;
+  icon?: string;
+  parentId?: string;
+  isActive: boolean;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+
+  // Relations
+  products?: Product[];
+  parent?: ProductCategory;
+  children?: ProductCategory[];
+  _count?: {
+    products: number;
+  };
+}
+
+export interface CategoryFormData {
+  name: string;
+  description?: string;
+  image?: string;
+  icon?: string;
+  parentId?: string;
+  isActive: boolean;
+  sortOrder: number;
+}
+
+export interface CategoryTree extends ProductCategory {
+  children: CategoryTree[];
+  level: number;
+}
+
+// Brand Types
+export interface Brand {
+  id: string;
+  name: string;
+  description?: string;
+  logo?: string;
+  website?: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+
+  // Relations
+  products?: Product[];
+  _count?: {
+    products: number;
+  };
+}
+
+export interface BrandFormData {
+  name: string;
+  description?: string;
+  logo?: string;
+  website?: string;
+  isActive: boolean;
+}
+
+// Product Types
+export interface Product {
+  id: string;
+  name: string;
+  description?: string;
+  price: number;
+  images: string[];
+  categoryId?: string;
+  brandId?: string;
+  occasionTypes: string[];
+  recipientTypes: string[];
+  isActive: boolean;
+  isFeatured: boolean;
+  stock: number;
+  sku?: string;
+  tags: string[];
+  metadata?: any;
+  createdAt: string;
+  updatedAt: string;
+
+  // Relations
+  category?: ProductCategory;
+  brand?: Brand;
+}
+
+export interface ProductFormData {
+  name: string;
+  description?: string;
+  price: number;
+  images: string[];
+  categoryId?: string;
+  brandId?: string;
+  occasionTypes: string[];
+  recipientTypes: string[];
+  isActive: boolean;
+  isFeatured: boolean;
+  stock: number;
+  sku?: string;
+  tags: string[];
+  metadata?: any;
+}
+
+export interface ProductFilters {
+  page?: number;
+  limit?: number;
+  categoryId?: string;
+  brandId?: string;
+  occasionType?: string;
+  search?: string;
+  isActive?: boolean;
+  isFeatured?: boolean;
+}
+
+export interface ProductsResponse {
+  data: Product[];
+  meta: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}

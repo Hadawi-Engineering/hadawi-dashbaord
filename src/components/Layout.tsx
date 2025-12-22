@@ -23,7 +23,10 @@ import {
   ChevronRight,
   Bell,
   Building2,
-  Percent
+  Percent,
+  Package2,
+  Folder,
+  Tags,
 } from 'lucide-react';
 import adminService from '../services/adminService';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -38,6 +41,7 @@ interface MenuItem {
 export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [configOpen, setConfigOpen] = useState(false);
+  const [catalogOpen, setCatalogOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const admin = adminService.getCurrentAdmin();
@@ -65,6 +69,16 @@ export default function Layout() {
     { path: '/withdrawals', icon: Wallet, label: t('nav.withdrawals') },
     { path: '/delivery-partners', icon: Truck, label: t('nav.deliveryPartners') },
     { path: '/delivery-records', icon: Package, label: t('nav.deliveryRecords') },
+    {
+      path: '/catalog',
+      icon: Package2,
+      label: t('nav.catalog'),
+      children: [
+        { path: '/products', icon: Package2, label: t('nav.products') },
+        { path: '/categories', icon: Folder, label: t('nav.categories') },
+        { path: '/brands', icon: Tags, label: t('nav.brands') },
+      ]
+    },
     {
       path: '/configuration',
       icon: Settings,
@@ -106,15 +120,21 @@ export default function Layout() {
             {menuItems.map((item) => {
               const Icon = item.icon;
               const hasChildren = item.children && item.children.length > 0;
+              const isCatalogItem = item.path === '/catalog';
               const isConfigItem = item.path === '/configuration';
+              const isCatalogActive = isCatalogItem && (location.pathname === '/products' || location.pathname === '/categories' || location.pathname === '/brands');
               const isConfigActive = isConfigItem && (location.pathname === '/occasion-types' || location.pathname === '/taxes' || location.pathname === '/packaging');
 
               if (hasChildren) {
+                const isOpen = isCatalogItem ? catalogOpen : configOpen;
+                const toggleOpen = isCatalogItem ? () => setCatalogOpen(!catalogOpen) : () => setConfigOpen(!configOpen);
+                const isSubMenuActive = isCatalogItem ? isCatalogActive : isConfigActive;
+
                 return (
                   <div key={item.path}>
                     <button
-                      onClick={() => setConfigOpen(!configOpen)}
-                      className={`flex items-center justify-between w-full px-4 py-3 rounded-lg transition-colors ${isConfigActive
+                      onClick={toggleOpen}
+                      className={`flex items-center justify-between w-full px-4 py-3 rounded-lg transition-colors ${isSubMenuActive
                         ? 'bg-primary-50 text-primary-700 font-medium'
                         : 'text-gray-700 hover:bg-gray-50'
                         }`}
@@ -124,13 +144,13 @@ export default function Layout() {
                         <span>{item.label}</span>
                       </div>
                       {isRTL ? (
-                        configOpen ? <ChevronRight size={16} /> : <ChevronDown size={16} />
+                        isOpen ? <ChevronRight size={16} /> : <ChevronDown size={16} />
                       ) : (
-                        configOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />
+                        isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />
                       )}
                     </button>
 
-                    {configOpen && (
+                    {isOpen && (
                       <div className={`ml-4 ${isRTL ? 'mr-4' : 'ml-4'} space-y-1`}>
                         {item.children!.map((child) => {
                           const ChildIcon = child.icon;
