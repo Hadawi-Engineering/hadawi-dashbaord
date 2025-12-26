@@ -60,15 +60,6 @@ export default function Layout() {
     { path: '/dashboard', icon: LayoutDashboard, label: t('nav.dashboard') },
     { path: '/users', icon: Users, label: t('nav.users') },
     { path: '/occasions', icon: Calendar, label: t('nav.occasions') },
-    { path: '/payments', icon: CreditCard, label: t('nav.payments') },
-    { path: '/promo-codes', icon: Tag, label: t('nav.promoCodes') },
-    { path: '/banners', icon: Image, label: t('nav.banners') },
-    { path: '/notifications', icon: Bell, label: t('nav.notifications') },
-    { path: '/companies', icon: Building2, label: t('companies.title') },
-    { path: '/offers', icon: Percent, label: t('offers.title') },
-    { path: '/withdrawals', icon: Wallet, label: t('nav.withdrawals') },
-    { path: '/delivery-partners', icon: Truck, label: t('nav.deliveryPartners') },
-    { path: '/delivery-records', icon: Package, label: t('nav.deliveryRecords') },
     {
       path: '/catalog',
       icon: Package2,
@@ -79,6 +70,16 @@ export default function Layout() {
         { path: '/brands', icon: Tags, label: t('nav.brands') },
       ]
     },
+    { path: '/payments', icon: CreditCard, label: t('nav.payments') },
+    { path: '/promo-codes', icon: Tag, label: t('nav.promoCodes') },
+    { path: '/banners', icon: Image, label: t('nav.banners') },
+    { path: '/notifications', icon: Bell, label: t('nav.notifications') },
+    { path: '/companies', icon: Building2, label: t('companies.title') },
+    { path: '/offers', icon: Percent, label: t('offers.title') },
+    { path: '/withdrawals', icon: Wallet, label: t('nav.withdrawals') },
+    { path: '/delivery-partners', icon: Truck, label: t('nav.deliveryPartners') },
+    { path: '/delivery-records', icon: Package, label: t('nav.deliveryRecords') },
+
     {
       path: '/configuration',
       icon: Settings,
