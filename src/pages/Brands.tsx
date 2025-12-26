@@ -67,8 +67,10 @@ export default function Brands() {
     const handleEdit = (brand: Brand) => {
         // Transform Brand to BrandFormData, excluding read-only fields
         const formData: BrandFormData = {
-            name: brand.name,
-            description: brand.description || '',
+            nameAr: brand.nameAr,
+            nameEn: brand.nameEn,
+            descriptionAr: brand.descriptionAr || '',
+            descriptionEn: brand.descriptionEn || '',
             logo: brand.logo || '',
             website: brand.website || '',
             isActive: brand.isActive,
@@ -81,10 +83,10 @@ export default function Brands() {
     const handleDelete = (brand: Brand) => {
         const productCount = brand._count?.products || 0;
         if (productCount > 0) {
-            alert(`Cannot delete brand "${brand.name}" because it has ${productCount} product(s). Please remove or reassign the products first.`);
+            alert(`Cannot delete brand "${brand.nameEn}" because it has ${productCount} product(s). Please remove or reassign the products first.`);
             return;
         }
-        if (window.confirm(`Are you sure you want to delete "${brand.name}"?`)) {
+        if (window.confirm(`Are you sure you want to delete "${brand.nameEn}"?`)) {
             deleteMutation.mutate(brand.id);
         }
     };
@@ -134,12 +136,12 @@ export default function Brands() {
                                         {brand.logo ? (
                                             <img
                                                 src={brand.logo}
-                                                alt={brand.name}
+                                                alt={brand.nameEn}
                                                 className="w-full h-full object-contain p-4"
                                             />
                                         ) : (
                                             <div className="text-gray-400 text-4xl font-bold">
-                                                {brand.name.charAt(0)}
+                                                {brand.nameEn.charAt(0)}
                                             </div>
                                         )}
                                     </div>
@@ -147,17 +149,20 @@ export default function Brands() {
                                     {/* Brand Info */}
                                     <div className="space-y-2">
                                         <div className="flex items-start justify-between gap-2">
-                                            <h3 className="font-semibold text-gray-900 text-lg">{brand.name}</h3>
+                                            <div>
+                                                <h3 className="font-semibold text-gray-900 text-lg">{brand.nameEn}</h3>
+                                                <p className="text-sm text-gray-500" dir="rtl">{brand.nameAr}</p>
+                                            </div>
                                             {!brand.isActive && (
-                                                <span className="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
+                                                <span className="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800 shrink-0">
                                                     Inactive
                                                 </span>
                                             )}
                                         </div>
 
-                                        {brand.description && (
+                                        {brand.descriptionEn && (
                                             <p className="text-sm text-gray-600 line-clamp-2">
-                                                {brand.description}
+                                                {brand.descriptionEn}
                                             </p>
                                         )}
 

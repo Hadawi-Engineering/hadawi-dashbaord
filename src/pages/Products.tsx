@@ -86,8 +86,10 @@ export default function Products() {
     const handleEdit = (product: Product) => {
         // Transform Product to ProductFormData, excluding read-only fields and relation objects
         const formData: ProductFormData = {
-            name: product.name,
-            description: product.description,
+            nameAr: product.nameAr,
+            nameEn: product.nameEn,
+            descriptionAr: product.descriptionAr || '',
+            descriptionEn: product.descriptionEn || '',
             price: product.price,
             images: product.images,
             categoryId: product.categoryId || '',
@@ -106,7 +108,7 @@ export default function Products() {
     };
 
     const handleDelete = (product: Product) => {
-        if (window.confirm(`Are you sure you want to delete "${product.name}"?`)) {
+        if (window.confirm(`Are you sure you want to delete "${product.nameEn}"?`)) {
             deleteMutation.mutate(product.id);
         }
     };
@@ -158,7 +160,7 @@ export default function Products() {
                         <option value="">All Categories</option>
                         {categories.map(category => (
                             <option key={category.id} value={category.id}>
-                                {category.name}
+                                {category.nameEn} {category.nameAr ? `(${category.nameAr})` : ''}
                             </option>
                         ))}
                     </select>
@@ -171,7 +173,7 @@ export default function Products() {
                         <option value="">All Brands</option>
                         {brands.map(brand => (
                             <option key={brand.id} value={brand.id}>
-                                {brand.name}
+                                {brand.nameEn} {brand.nameAr ? `(${brand.nameAr})` : ''}
                             </option>
                         ))}
                     </select>
@@ -232,7 +234,7 @@ export default function Products() {
                                                 {product.images[0] ? (
                                                     <img
                                                         src={product.images[0]}
-                                                        alt={product.name}
+                                                        alt={product.nameEn}
                                                         className="w-12 h-12 object-cover rounded"
                                                     />
                                                 ) : (
@@ -242,16 +244,17 @@ export default function Products() {
                                                 )}
                                             </td>
                                             <td className="px-6 py-4">
-                                                <div className="text-sm font-medium text-gray-900">{product.name}</div>
+                                                <div className="text-sm font-medium text-gray-900">{product.nameEn}</div>
+                                                <div className="text-xs text-gray-500" dir="rtl">{product.nameAr}</div>
                                                 {product.sku && (
-                                                    <div className="text-xs text-gray-500">SKU: {product.sku}</div>
+                                                    <div className="text-xs text-gray-500 mt-1">SKU: {product.sku}</div>
                                                 )}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {product.category?.name || '-'}
+                                                {product.category?.nameEn || '-'}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {product.brand?.name || '-'}
+                                                {product.brand?.nameEn || '-'}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                                 {product.price.toFixed(2)} SAR

@@ -21,8 +21,10 @@ export default function CategoryForm({
 }: CategoryFormProps) {
     const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<CategoryFormData>({
         defaultValues: category || {
-            name: '',
-            description: '',
+            nameAr: '',
+            nameEn: '',
+            descriptionAr: '',
+            descriptionEn: '',
             image: '',
             icon: '',
             parentId: '',
@@ -66,34 +68,70 @@ export default function CategoryForm({
                 <form onSubmit={handleSubmit(handleFormSubmit)} className="p-6 space-y-6">
                     {/* Basic Information */}
                     <div className="space-y-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Category Name *
-                            </label>
-                            <input
-                                {...register('name', {
-                                    required: 'Category name is required',
-                                    minLength: { value: 2, message: 'Name must be at least 2 characters' }
-                                })}
-                                type="text"
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                                placeholder="Enter category name"
-                            />
-                            {errors.name && (
-                                <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
-                            )}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Category Name (English) *
+                                </label>
+                                <input
+                                    {...register('nameEn', {
+                                        required: 'Category name (English) is required',
+                                        minLength: { value: 2, message: 'Name must be at least 2 characters' }
+                                    })}
+                                    type="text"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                    placeholder="Enter category name in English"
+                                />
+                                {errors.nameEn && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.nameEn.message}</p>
+                                )}
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Category Name (Arabic) *
+                                </label>
+                                <input
+                                    {...register('nameAr', {
+                                        required: 'Category name (Arabic) is required',
+                                        minLength: { value: 2, message: 'Name must be at least 2 characters' }
+                                    })}
+                                    type="text"
+                                    dir="rtl"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                    placeholder="أدخل اسم القسم"
+                                />
+                                {errors.nameAr && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.nameAr.message}</p>
+                                )}
+                            </div>
                         </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Description
-                            </label>
-                            <textarea
-                                {...register('description')}
-                                rows={3}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                                placeholder="Enter category description"
-                            />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Description (English)
+                                </label>
+                                <textarea
+                                    {...register('descriptionEn')}
+                                    rows={3}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                    placeholder="Enter category description in English"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Description (Arabic)
+                                </label>
+                                <textarea
+                                    {...register('descriptionAr')}
+                                    rows={3}
+                                    dir="rtl"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                    placeholder="أدخل وصف القسم"
+                                />
+                            </div>
                         </div>
                     </div>
 
@@ -122,7 +160,7 @@ export default function CategoryForm({
                             <option value="">None (Top Level Category)</option>
                             {availableParents.map(cat => (
                                 <option key={cat.id} value={cat.id}>
-                                    {cat.name}
+                                    {cat.nameEn} {cat.nameAr ? `(${cat.nameAr})` : ''}
                                 </option>
                             ))}
                         </select>

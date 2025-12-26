@@ -728,8 +728,10 @@ export type RecipientType = typeof RECIPIENT_TYPES[number];
 // Product Category Types
 export interface ProductCategory {
   id: string;
-  name: string;
-  description?: string;
+  nameAr: string;
+  nameEn: string;
+  descriptionAr?: string;
+  descriptionEn?: string;
   image?: string;
   icon?: string;
   parentId?: string;
@@ -748,8 +750,10 @@ export interface ProductCategory {
 }
 
 export interface CategoryFormData {
-  name: string;
-  description?: string;
+  nameAr: string;
+  nameEn: string;
+  descriptionAr?: string;
+  descriptionEn?: string;
   image?: string;
   icon?: string;
   parentId?: string;
@@ -765,8 +769,10 @@ export interface CategoryTree extends ProductCategory {
 // Brand Types
 export interface Brand {
   id: string;
-  name: string;
-  description?: string;
+  nameAr: string;
+  nameEn: string;
+  descriptionAr?: string;
+  descriptionEn?: string;
   logo?: string;
   website?: string;
   isActive: boolean;
@@ -781,8 +787,10 @@ export interface Brand {
 }
 
 export interface BrandFormData {
-  name: string;
-  description?: string;
+  nameAr: string;
+  nameEn: string;
+  descriptionAr?: string;
+  descriptionEn?: string;
   logo?: string;
   website?: string;
   isActive: boolean;
@@ -791,8 +799,10 @@ export interface BrandFormData {
 // Product Types
 export interface Product {
   id: string;
-  name: string;
-  description?: string;
+  nameAr: string;
+  nameEn: string;
+  descriptionAr?: string;
+  descriptionEn?: string;
   price: number;
   images: string[];
   categoryId?: string;
@@ -814,8 +824,10 @@ export interface Product {
 }
 
 export interface ProductFormData {
-  name: string;
-  description?: string;
+  nameAr: string;
+  nameEn: string;
+  descriptionAr?: string;
+  descriptionEn?: string;
   price: number;
   images: string[];
   categoryId?: string;

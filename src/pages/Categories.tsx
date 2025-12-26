@@ -68,8 +68,10 @@ export default function Categories() {
     const handleEdit = (category: ProductCategory) => {
         // Transform ProductCategory to CategoryFormData, excluding read-only fields
         const formData: CategoryFormData = {
-            name: category.name,
-            description: category.description || '',
+            nameAr: category.nameAr,
+            nameEn: category.nameEn,
+            descriptionAr: category.descriptionAr || '',
+            descriptionEn: category.descriptionEn || '',
             image: category.image || '',
             icon: category.icon || '',
             parentId: category.parentId || '',
@@ -84,10 +86,10 @@ export default function Categories() {
     const handleDelete = (category: ProductCategory) => {
         const productCount = category._count?.products || 0;
         if (productCount > 0) {
-            alert(`Cannot delete category "${category.name}" because it has ${productCount} product(s). Please remove or reassign the products first.`);
+            alert(`Cannot delete category "${category.nameEn}" because it has ${productCount} product(s). Please remove or reassign the products first.`);
             return;
         }
-        if (window.confirm(`Are you sure you want to delete "${category.name}"?`)) {
+        if (window.confirm(`Are you sure you want to delete "${category.nameEn}"?`)) {
             deleteMutation.mutate(category.id);
         }
     };
@@ -148,7 +150,7 @@ export default function Categories() {
                     {category.image ? (
                         <img
                             src={category.image}
-                            alt={category.name}
+                            alt={category.nameEn}
                             className="w-10 h-10 object-cover rounded"
                         />
                     ) : (
@@ -160,7 +162,9 @@ export default function Categories() {
                     {/* Category Info */}
                     <div className="flex-1">
                         <div className="flex items-center gap-2">
-                            <h3 className="font-medium text-gray-900">{category.name}</h3>
+                            <h3 className="font-medium text-gray-900">
+                                {category.nameEn} <span className="text-gray-500 text-sm font-normal" dir="rtl">({category.nameAr})</span>
+                            </h3>
                             {!category.isActive && (
                                 <span className="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
                                     Inactive

@@ -26,8 +26,10 @@ export default function ProductForm({
 }: ProductFormProps) {
     const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<ProductFormData>({
         defaultValues: product || {
-            name: '',
-            description: '',
+            nameAr: '',
+            nameEn: '',
+            descriptionAr: '',
+            descriptionEn: '',
             price: 0,
             images: [],
             categoryId: '',
@@ -79,31 +81,70 @@ export default function ProductForm({
                     <div className="space-y-4">
                         <h3 className="text-lg font-medium text-gray-900">Basic Information</h3>
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Product Name *
-                            </label>
-                            <input
-                                {...register('name', { required: 'Product name is required', minLength: { value: 3, message: 'Name must be at least 3 characters' } })}
-                                type="text"
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                                placeholder="Enter product name"
-                            />
-                            {errors.name && (
-                                <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
-                            )}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Product Name (English) *
+                                </label>
+                                <input
+                                    {...register('nameEn', {
+                                        required: 'Product name (English) is required',
+                                        minLength: { value: 3, message: 'Name must be at least 3 characters' }
+                                    })}
+                                    type="text"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                    placeholder="Enter product name in English"
+                                />
+                                {errors.nameEn && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.nameEn.message}</p>
+                                )}
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Product Name (Arabic) *
+                                </label>
+                                <input
+                                    {...register('nameAr', {
+                                        required: 'Product name (Arabic) is required',
+                                        minLength: { value: 3, message: 'Name must be at least 3 characters' }
+                                    })}
+                                    type="text"
+                                    dir="rtl"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                    placeholder="أدخل اسم المنتج"
+                                />
+                                {errors.nameAr && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.nameAr.message}</p>
+                                )}
+                            </div>
                         </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Description
-                            </label>
-                            <textarea
-                                {...register('description')}
-                                rows={4}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                                placeholder="Enter product description"
-                            />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Description (English)
+                                </label>
+                                <textarea
+                                    {...register('descriptionEn')}
+                                    rows={4}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                    placeholder="Enter product description in English"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Description (Arabic)
+                                </label>
+                                <textarea
+                                    {...register('descriptionAr')}
+                                    rows={4}
+                                    dir="rtl"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                    placeholder="أدخل وصف المنتج"
+                                />
+                            </div>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -185,7 +226,7 @@ export default function ProductForm({
                                 <option value="">Select a category</option>
                                 {categories.map(category => (
                                     <option key={category.id} value={category.id}>
-                                        {category.name}
+                                        {category.nameEn} {category.nameAr ? `(${category.nameAr})` : ''}
                                     </option>
                                 ))}
                             </select>
@@ -202,7 +243,7 @@ export default function ProductForm({
                                 <option value="">Select a brand</option>
                                 {brands.map(brand => (
                                     <option key={brand.id} value={brand.id}>
-                                        {brand.name}
+                                        {brand.nameEn} {brand.nameAr ? `(${brand.nameAr})` : ''}
                                     </option>
                                 ))}
                             </select>
