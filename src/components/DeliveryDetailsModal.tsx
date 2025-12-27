@@ -7,6 +7,7 @@ import Button from './ui/Button';
 import Badge from './ui/Badge';
 import MultiImageUploader from './ui/MultiImageUploader';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useScrollLock } from '../hooks/useScrollLock';
 import type { DeliveryRecord, DeliveryRecordCreate, DeliveryPartner } from '../types';
 
 interface DeliveryDetailsModalProps {
@@ -53,26 +54,26 @@ export default function DeliveryDetailsModal({
   // Ensure deliveryPartners is always an array
   const partnersList = Array.isArray(deliveryPartners) ? deliveryPartners : [
     // Mock data as fallback with proper UUIDs
-    { 
-      id: '550e8400-e29b-41d4-a716-446655440001', 
-      name: 'أحمد محمد', 
-      email: 'ahmed@example.com', 
-      phone: '+966501234567', 
-      status: 'active' 
+    {
+      id: '550e8400-e29b-41d4-a716-446655440001',
+      name: 'أحمد محمد',
+      email: 'ahmed@example.com',
+      phone: '+966501234567',
+      status: 'active'
     },
-    { 
-      id: '550e8400-e29b-41d4-a716-446655440002', 
-      name: 'سارة أحمد', 
-      email: 'sara@example.com', 
-      phone: '+966509876543', 
-      status: 'active' 
+    {
+      id: '550e8400-e29b-41d4-a716-446655440002',
+      name: 'سارة أحمد',
+      email: 'sara@example.com',
+      phone: '+966509876543',
+      status: 'active'
     },
-    { 
-      id: '550e8400-e29b-41d4-a716-446655440003', 
-      name: 'محمد علي', 
-      email: 'mohammed@example.com', 
-      phone: '+966501111111', 
-      status: 'active' 
+    {
+      id: '550e8400-e29b-41d4-a716-446655440003',
+      name: 'محمد علي',
+      email: 'mohammed@example.com',
+      phone: '+966501111111',
+      status: 'active'
     }
   ];
 
@@ -149,7 +150,7 @@ export default function DeliveryDetailsModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (existingDelivery) {
       // Update existing delivery
       updateDeliveryMutation.mutate({
@@ -182,7 +183,7 @@ export default function DeliveryDetailsModal({
       failed: { color: 'red', text: t('delivery.statuses.failed') },
       cancelled: { color: 'gray', text: t('delivery.statuses.cancelled') },
     };
-    
+
     const statusInfo = statusMap[status as keyof typeof statusMap] || { color: 'gray', text: status };
     return <Badge color={statusInfo.color as any}>{statusInfo.text}</Badge>;
   };
@@ -193,7 +194,7 @@ export default function DeliveryDetailsModal({
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="flex min-h-screen items-center justify-center p-4">
         <div className="fixed inset-0 bg-black bg-opacity-50" onClick={onClose} />
-        
+
         <div className={`relative bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto ${isRTL ? 'text-right' : 'text-left'}`}>
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-gray-200">
@@ -456,7 +457,7 @@ export default function DeliveryDetailsModal({
                           <p className="text-sm text-gray-500">{existingDelivery?.deliveryPartner?.email}</p>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center gap-3">
                         <Calendar className="w-5 h-5 text-primary-600" />
                         <div>
@@ -478,7 +479,7 @@ export default function DeliveryDetailsModal({
                           <p className="font-medium">{existingDelivery?.deliveryAddress}</p>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center gap-3">
                         <User className="w-5 h-5 text-primary-600" />
                         <div>

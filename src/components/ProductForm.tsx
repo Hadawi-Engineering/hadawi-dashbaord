@@ -6,6 +6,7 @@ import { OCCASION_TYPES, RECIPIENT_TYPES } from '../types';
 import ImageUpload from './ui/ImageUpload';
 import MultiSelect from './ui/MultiSelect';
 import TagInput from './ui/TagInput';
+import { useScrollLock } from '../hooks/useScrollLock';
 
 interface ProductFormProps {
     product?: ProductFormData & { id?: string };
@@ -24,6 +25,7 @@ export default function ProductForm({
     onClose,
     isLoading = false
 }: ProductFormProps) {
+    useScrollLock(true);
     const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<ProductFormData>({
         defaultValues: product || {
             nameAr: '',

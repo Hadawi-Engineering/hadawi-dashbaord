@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { X } from 'lucide-react';
 import type { CategoryFormData, ProductCategory } from '../types';
 import ImageUpload from './ui/ImageUpload';
+import { useScrollLock } from '../hooks/useScrollLock';
 
 interface CategoryFormProps {
     category?: CategoryFormData & { id?: string };
@@ -19,6 +20,7 @@ export default function CategoryForm({
     onClose,
     isLoading = false
 }: CategoryFormProps) {
+    useScrollLock(true);
     const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<CategoryFormData>({
         defaultValues: category || {
             nameAr: '',

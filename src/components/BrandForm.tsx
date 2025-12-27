@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { X } from 'lucide-react';
 import type { BrandFormData } from '../types';
 import ImageUpload from './ui/ImageUpload';
+import { useScrollLock } from '../hooks/useScrollLock';
 
 interface BrandFormProps {
     brand?: BrandFormData & { id?: string };
@@ -17,6 +18,7 @@ export default function BrandForm({
     onClose,
     isLoading = false
 }: BrandFormProps) {
+    useScrollLock(true);
     const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<BrandFormData>({
         defaultValues: brand || {
             nameAr: '',

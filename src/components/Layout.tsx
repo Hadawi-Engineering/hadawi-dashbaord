@@ -30,6 +30,7 @@ import {
 } from 'lucide-react';
 import adminService from '../services/adminService';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useScrollLock } from '../hooks/useScrollLock';
 
 interface MenuItem {
   path: string;
@@ -40,6 +41,7 @@ interface MenuItem {
 
 export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  useScrollLock(sidebarOpen);
   const [configOpen, setConfigOpen] = useState(false);
   const [catalogOpen, setCatalogOpen] = useState(false);
   const navigate = useNavigate();
