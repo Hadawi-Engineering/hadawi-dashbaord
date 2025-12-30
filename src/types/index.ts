@@ -351,13 +351,27 @@ export interface TaxStatistics {
 // Packaging Types
 export interface PackagingType {
   id: string;
-  name: string;
+  nameAr: string;
+  nameEn: string;
+  descriptionAr?: string;
+  descriptionEn?: string;
   images: string[];
   amount: number;
   giftType: 'money' | 'gift';
   status: 'active' | 'inactive' | 'archived';
   createdAt: string;
   updatedAt: string;
+}
+
+export interface PackagingFormData {
+  nameAr: string;
+  nameEn: string;
+  descriptionAr?: string;
+  descriptionEn?: string;
+  images: string[];
+  amount: number;
+  giftType: 'money' | 'gift';
+  status: 'active' | 'inactive' | 'archived';
 }
 
 export interface PackagingStatistics {
@@ -722,8 +736,26 @@ export const RECIPIENT_TYPES = [
   'teacher',
 ] as const;
 
-export type OccasionType = typeof OCCASION_TYPES[number];
-export type RecipientType = typeof RECIPIENT_TYPES[number];
+export interface OccasionType {
+  id: string;
+  key: string;
+  nameAr: string;
+  nameEn: string;
+  descriptionAr?: string;
+  descriptionEn?: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface OccasionTypeFormData {
+  key: string;
+  nameAr: string;
+  nameEn: string;
+  descriptionAr?: string;
+  descriptionEn?: string;
+  isActive: boolean;
+}
 
 // Product Category Types
 export interface ProductCategory {

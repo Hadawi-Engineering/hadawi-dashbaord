@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, Edit2, Trash2, BarChart3, Package, Image as ImageIcon, Eye, ToggleLeft, ToggleRight } from 'lucide-react';
 import adminService from '../services/adminService';
@@ -8,9 +8,9 @@ import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
 import Modal from '../components/ui/Modal';
 import Input from '../components/ui/Input';
-import ImageUploader from '../components/ui/ImageUploader';
+import PackagingForm from '../components/PackagingForm';
 import { useLanguage } from '../contexts/LanguageContext';
-import type { PackagingType, PackagingStatistics } from '../types';
+import type { PackagingType, PackagingFormData } from '../types';
 
 type FilterStatus = 'all' | 'active' | 'inactive' | 'archived';
 
@@ -24,14 +24,6 @@ export default function Packaging() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all');
   const queryClient = useQueryClient();
-
-  const [formData, setFormData] = useState({
-    name: '',
-    images: [] as string[],
-    amount: 0,
-    giftType: 'gift' as PackagingType['giftType'],
-    status: 'active' as PackagingType['status'],
-  });
 
   // Fetch packaging types
   const { data: packagingTypes, isLoading } = useQuery({
@@ -52,7 +44,7 @@ export default function Packaging() {
 
   // Create mutation
   const createMutation = useMutation({
-    mutationFn: (data: Omit<PackagingType, 'id' | 'createdAt' | 'updatedAt'>) =>
+    mutationFn: (data: PackagingFormData) =>
       adminService.createPackagingType(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['packaging-types'] });
@@ -65,7 +57,7 @@ export default function Packaging() {
 
   // Update mutation
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<PackagingType> }) =>
+    mutationFn: ({ id, data }: { id: string; data: Partial<PackagingFormData> }) =>
       adminService.updatePackagingType(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['packaging-types'] });
@@ -101,22 +93,8 @@ export default function Packaging() {
   const handleOpenModal = (packaging?: PackagingType) => {
     if (packaging) {
       setEditingPackaging(packaging);
-      setFormData({
-        name: packaging.name,
-        images: packaging.images,
-        amount: packaging.amount,
-        giftType: packaging.giftType,
-        status: packaging.status,
-      });
     } else {
       setEditingPackaging(null);
-      setFormData({
-        name: '',
-        images: [],
-        amount: 0,
-        giftType: 'gift',
-        status: 'active',
-      });
     }
     setShowModal(true);
   };
@@ -135,8 +113,7 @@ export default function Packaging() {
     setSelectedImages([]);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (formData: PackagingFormData) => {
     try {
       if (editingPackaging) {
         await updateMutation.mutateAsync({ id: editingPackaging.id, data: formData });
@@ -144,7 +121,7 @@ export default function Packaging() {
         await createMutation.mutateAsync(formData);
       }
     } catch (error) {
-      alert(t('common.error'));
+      // Error handled by mutation
     }
   };
 
@@ -153,7 +130,7 @@ export default function Packaging() {
       try {
         await deleteMutation.mutateAsync(id);
       } catch (error) {
-        alert(t('common.error'));
+        // Error handled by mutation
       }
     }
   };
@@ -163,7 +140,7 @@ export default function Packaging() {
     try {
       await updateStatusMutation.mutateAsync({ id, status: newStatus });
     } catch (error) {
-      alert(t('common.error'));
+      // Error handled by mutation
     }
   };
 
@@ -182,8 +159,12 @@ export default function Packaging() {
   };
 
   const filteredPackaging = packagingTypes?.filter((packaging) => {
+    const searchLower = searchTerm.toLowerCase();
     const matchesSearch =
-      packaging.name.toLowerCase().includes(searchTerm.toLowerCase());
+      packaging.nameEn.toLowerCase().includes(searchLower) ||
+      packaging.nameAr.toLowerCase().includes(searchLower) ||
+      packaging.descriptionEn?.toLowerCase().includes(searchLower) ||
+      packaging.descriptionAr?.toLowerCase().includes(searchLower);
 
     return matchesSearch;
   });
@@ -303,7 +284,8 @@ export default function Packaging() {
             {filteredPackaging?.map((packaging) => (
               <Table.Row key={packaging.id}>
                 <Table.Td>
-                  <div className="font-medium text-gray-900">{packaging.name}</div>
+                  <div className="font-medium text-gray-900">{packaging.nameEn}</div>
+                  <div className="text-xs text-gray-500" dir="rtl">{packaging.nameAr}</div>
                 </Table.Td>
                 <Table.Td>
                   <div className="flex items-center gap-2">
@@ -311,7 +293,7 @@ export default function Packaging() {
                       <>
                         <img
                           src={packaging.images[0]}
-                          alt={packaging.name}
+                          alt={packaging.nameEn}
                           className="w-12 h-12 object-cover rounded"
                         />
                         {packaging.images.length > 1 && (
@@ -387,107 +369,13 @@ export default function Packaging() {
 
       {/* Create/Edit Modal */}
       {showModal && (
-        <Modal
+        <PackagingForm
           isOpen={showModal}
           onClose={handleCloseModal}
-          title={editingPackaging ? t('packaging.edit') : t('packaging.add')}
-          size="lg"
-        >
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <Input
-              label={t('packaging.name')}
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              placeholder={t('packaging.namePlaceholder')}
-              required
-            />
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t('packaging.images')}
-              </label>
-              <div className="space-y-2">
-                {formData.images.map((image, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <img src={image} alt={`Image ${index + 1}`} className="w-16 h-16 object-cover rounded" />
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="danger"
-                      onClick={() => {
-                        const newImages = formData.images.filter((_, i) => i !== index);
-                        setFormData({ ...formData, images: newImages });
-                      }}
-                    >
-                      <Trash2 size={16} />
-                    </Button>
-                  </div>
-                ))}
-                <ImageUploader
-                  label=""
-                  value=""
-                  onChange={(url) => {
-                    if (url) {
-                      setFormData({ ...formData, images: [...formData.images, url] });
-                    }
-                  }}
-                  maxSize={10}
-                />
-              </div>
-            </div>
-
-            <Input
-              label={t('packaging.amount')}
-              type="number"
-              step="0.1"
-              min="0"
-              value={formData.amount}
-              onChange={(e) => setFormData({ ...formData, amount: parseFloat(e.target.value) || 0 })}
-              placeholder="35.0"
-              required
-            />
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t('packaging.giftType')}
-              </label>
-              <select
-                value={formData.giftType}
-                onChange={(e) => setFormData({ ...formData, giftType: e.target.value as PackagingType['giftType'] })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                required
-              >
-                <option value="gift">{t('packaging.giftTypeOptions.gift')}</option>
-                <option value="money">{t('packaging.giftTypeOptions.money')}</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t('common.status')}
-              </label>
-              <select
-                value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value as PackagingType['status'] })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                required
-              >
-                <option value="active">{t('common.active')}</option>
-                <option value="inactive">{t('common.inactive')}</option>
-                <option value="archived">{t('packaging.archived')}</option>
-              </select>
-            </div>
-
-            <div className="flex gap-3 pt-4">
-              <Button type="submit" loading={createMutation.isPending || updateMutation.isPending} className="flex-1">
-                {editingPackaging ? t('common.update') : t('common.add')}
-              </Button>
-              <Button type="button" variant="secondary" onClick={handleCloseModal} className="flex-1">
-                {t('common.cancel')}
-              </Button>
-            </div>
-          </form>
-        </Modal>
+          onSubmit={handleSubmit}
+          initialData={editingPackaging}
+          loading={createMutation.isPending || updateMutation.isPending}
+        />
       )}
 
       {/* Image Gallery Modal */}

@@ -52,6 +52,9 @@ import type {
   CategoryFormData,
   Brand,
   BrandFormData,
+  OccasionType,
+  OccasionTypeFormData,
+  PackagingFormData,
 } from '../types';
 
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
@@ -374,33 +377,33 @@ class AdminService {
 
   // ==================== OCCASION TYPES ====================
 
-  async getOccasionTypes(): Promise<any[]> {
-    const { data } = await this.api.get<any[]>('/occasion-types');
+  async getOccasionTypes(): Promise<OccasionType[]> {
+    const { data } = await this.api.get<OccasionType[]>('/occasion-types');
     return data;
   }
 
-  async getActiveOccasionTypes(): Promise<any[]> {
-    const { data } = await this.api.get<any[]>('/occasion-types/active');
+  async getActiveOccasionTypes(): Promise<OccasionType[]> {
+    const { data } = await this.api.get<OccasionType[]>('/occasion-types/active');
     return data;
   }
 
-  async getOccasionType(id: string): Promise<any> {
-    const { data } = await this.api.get<any>(`/occasion-types/${id}`);
+  async getOccasionType(id: string): Promise<OccasionType> {
+    const { data } = await this.api.get<OccasionType>(`/occasion-types/${id}`);
     return data;
   }
 
-  async getOccasionTypeByKey(key: string): Promise<any> {
-    const { data } = await this.api.get<any>(`/occasion-types/key/${key}`);
+  async getOccasionTypeByKey(key: string): Promise<OccasionType> {
+    const { data } = await this.api.get<OccasionType>(`/occasion-types/key/${key}`);
     return data;
   }
 
-  async createOccasionType(typeData: any): Promise<any> {
-    const { data } = await this.api.post<any>('/occasion-types', typeData);
+  async createOccasionType(typeData: OccasionTypeFormData): Promise<OccasionType> {
+    const { data } = await this.api.post<OccasionType>('/occasion-types', typeData);
     return data;
   }
 
-  async updateOccasionType(id: string, typeData: any): Promise<any> {
-    const { data } = await this.api.patch<any>(`/occasion-types/${id}`, typeData);
+  async updateOccasionType(id: string, typeData: Partial<OccasionTypeFormData>): Promise<OccasionType> {
+    const { data } = await this.api.patch<OccasionType>(`/occasion-types/${id}`, typeData);
     return data;
   }
 
@@ -488,12 +491,12 @@ class AdminService {
     return data;
   }
 
-  async createPackagingType(packagingData: Omit<PackagingType, 'id' | 'createdAt' | 'updatedAt'>): Promise<PackagingType> {
+  async createPackagingType(packagingData: PackagingFormData): Promise<PackagingType> {
     const { data } = await this.api.post<PackagingType>('/packaging-types', packagingData);
     return data;
   }
 
-  async updatePackagingType(id: string, packagingData: Partial<PackagingType>): Promise<PackagingType> {
+  async updatePackagingType(id: string, packagingData: Partial<PackagingFormData>): Promise<PackagingType> {
     const { data } = await this.api.patch<PackagingType>(`/packaging-types/${id}`, packagingData);
     return data;
   }
