@@ -9,7 +9,12 @@ import type {
   PaymentStats,
   PromoCode,
   Banner,
+  Region,
+  CreateRegionData,
+  UpdateRegionData,
   City,
+  CreateCityData,
+  UpdateCityData,
   Quarter,
   DeliveryPartner,
   DeliveryPartnerCreate,
@@ -255,17 +260,74 @@ class AdminService {
     await this.api.delete(`/banners/${bannerId}`);
   }
 
-  // ==================== CITIES & QUARTERS ====================
+  // ==================== REGIONS ====================
+
+  async getRegions(): Promise<Region[]> {
+    const { data } = await this.api.get<Region[]>('/regions');
+    return data;
+  }
+
+  async getOperationalRegions(): Promise<Region[]> {
+    const { data } = await this.api.get<Region[]>('/regions/operational');
+    return data;
+  }
+
+  async getRegion(id: string): Promise<Region> {
+    const { data } = await this.api.get<Region>(`/regions/${id}`);
+    return data;
+  }
+
+  async createRegion(regionData: CreateRegionData): Promise<Region> {
+    const { data } = await this.api.post<Region>('/regions', regionData);
+    return data;
+  }
+
+  async updateRegion(id: string, regionData: UpdateRegionData): Promise<Region> {
+    const { data } = await this.api.patch<Region>(`/regions/${id}`, regionData);
+    return data;
+  }
+
+  async toggleRegionOperational(id: string): Promise<Region> {
+    const { data } = await this.api.patch<Region>(`/regions/${id}/toggle-operational`);
+    return data;
+  }
+
+  async deleteRegion(id: string): Promise<void> {
+    await this.api.delete(`/regions/${id}`);
+  }
+
+  // ==================== CITIES ====================
 
   async getCities(): Promise<City[]> {
     const { data } = await this.api.get<City[]>('/cities');
     return data;
   }
 
-  async createCity(cityData: { name: string }): Promise<City> {
+  async getOperationalCities(): Promise<City[]> {
+    const { data } = await this.api.get<City[]>('/cities/operational');
+    return data;
+  }
+
+  async getCity(id: string): Promise<City> {
+    const { data } = await this.api.get<City>(`/cities/${id}`);
+    return data;
+  }
+
+  async createCity(cityData: CreateCityData): Promise<City> {
     const { data } = await this.api.post<City>('/cities', cityData);
     return data;
   }
+
+  async updateCity(id: string, cityData: UpdateCityData): Promise<City> {
+    const { data } = await this.api.patch<City>(`/cities/${id}`, cityData);
+    return data;
+  }
+
+  async deleteCity(id: string): Promise<void> {
+    await this.api.delete(`/cities/${id}`);
+  }
+
+  // ==================== QUARTERS ====================
 
   async getQuarters(cityId: string): Promise<Quarter[]> {
     const { data } = await this.api.get<Quarter[]>(`/cities/${cityId}/quarters`);

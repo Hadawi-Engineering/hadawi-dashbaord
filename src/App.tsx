@@ -24,6 +24,8 @@ import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
+import { Regions } from './pages/Regions';
+import { Cities } from './pages/Cities';
 
 function App() {
   return (
@@ -44,6 +46,8 @@ function App() {
         <Route path="withdrawals" element={<Withdrawals />} />
         <Route path="delivery-partners" element={<DeliveryPartners />} />
         <Route path="delivery-records" element={<DeliveryRecords />} />
+        <Route path="regions" element={<Regions />} />
+        <Route path="cities" element={<Cities />} />
         <Route path="taxes" element={<Taxes />} />
         <Route path="packaging" element={<Packaging />} />
         <Route path="companies" element={<Companies />} />

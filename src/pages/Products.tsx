@@ -101,6 +101,7 @@ export default function Products() {
             stock: product.stock,
             sku: product.sku || '',
             tags: product.tags,
+            cityIds: product.cities?.map(pc => pc.cityId) || [],
         };
         // Keep the product object for tracking which product is being edited
         setEditingProduct({ ...formData, id: product.id } as any);
@@ -214,6 +215,9 @@ export default function Products() {
                                             Brand
                                         </th>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Cities
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Price
                                         </th>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -255,6 +259,24 @@ export default function Products() {
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                 {product.brand?.nameEn || '-'}
+                                            </td>
+                                            <td className="px-6 py-4 text-sm text-gray-500">
+                                                {product.cities && product.cities.length > 0 ? (
+                                                    <div className="flex flex-wrap gap-1">
+                                                        {product.cities.slice(0, 2).map(pc => (
+                                                            <span key={pc.id} className="inline-flex px-2 py-1 text-xs bg-blue-50 text-blue-700 rounded">
+                                                                {pc.city.nameEn}
+                                                            </span>
+                                                        ))}
+                                                        {product.cities.length > 2 && (
+                                                            <span className="inline-flex px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded">
+                                                                +{product.cities.length - 2} more
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                ) : (
+                                                    <span className="text-xs text-gray-400">All cities</span>
+                                                )}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                                 {product.price.toFixed(2)} SAR

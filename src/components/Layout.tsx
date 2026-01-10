@@ -27,6 +27,8 @@ import {
   Package2,
   Folder,
   Tags,
+  Globe,
+  MapPin,
 } from 'lucide-react';
 import adminService from '../services/adminService';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -44,6 +46,7 @@ export default function Layout() {
   useScrollLock(sidebarOpen);
   const [configOpen, setConfigOpen] = useState(false);
   const [catalogOpen, setCatalogOpen] = useState(false);
+  const [locationsOpen, setLocationsOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const admin = adminService.getCurrentAdmin();
@@ -81,6 +84,16 @@ export default function Layout() {
     { path: '/withdrawals', icon: Wallet, label: t('nav.withdrawals') },
     { path: '/delivery-partners', icon: Truck, label: t('nav.deliveryPartners') },
     { path: '/delivery-records', icon: Package, label: t('nav.deliveryRecords') },
+
+    {
+      path: '/locations',
+      icon: Globe,
+      label: t('nav.locations'),
+      children: [
+        { path: '/regions', icon: Globe, label: t('nav.regions') },
+        { path: '/cities', icon: MapPin, label: t('nav.cities') },
+      ]
+    },
 
     {
       path: '/configuration',
@@ -125,13 +138,15 @@ export default function Layout() {
               const hasChildren = item.children && item.children.length > 0;
               const isCatalogItem = item.path === '/catalog';
               const isConfigItem = item.path === '/configuration';
+              const isLocationsItem = item.path === '/locations';
               const isCatalogActive = isCatalogItem && (location.pathname === '/products' || location.pathname === '/categories' || location.pathname === '/brands');
               const isConfigActive = isConfigItem && (location.pathname === '/occasion-types' || location.pathname === '/taxes' || location.pathname === '/packaging');
+              const isLocationsActive = isLocationsItem && (location.pathname === '/regions' || location.pathname === '/cities');
 
               if (hasChildren) {
-                const isOpen = isCatalogItem ? catalogOpen : configOpen;
-                const toggleOpen = isCatalogItem ? () => setCatalogOpen(!catalogOpen) : () => setConfigOpen(!configOpen);
-                const isSubMenuActive = isCatalogItem ? isCatalogActive : isConfigActive;
+                const isOpen = isCatalogItem ? catalogOpen : isConfigItem ? configOpen : locationsOpen;
+                const toggleOpen = isCatalogItem ? () => setCatalogOpen(!catalogOpen) : isConfigItem ? () => setConfigOpen(!configOpen) : () => setLocationsOpen(!locationsOpen);
+                const isSubMenuActive = isCatalogItem ? isCatalogActive : isConfigItem ? isConfigActive : isLocationsActive;
 
                 return (
                   <div key={item.path}>

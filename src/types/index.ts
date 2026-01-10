@@ -132,18 +132,82 @@ export interface Banner {
   createdAt: string;
 }
 
-// City & Quarter Types
+// Region & City & Quarter Types
+export interface Region {
+  id: string;
+  code: string;
+  nameAr: string;
+  nameEn: string;
+  currency: string;
+  phonePrefix: string;
+  isActive: boolean;
+  isOperational: boolean;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+  cities?: City[];
+}
+
+export interface CreateRegionData {
+  code: string;
+  nameAr: string;
+  nameEn: string;
+  currency?: string;
+  phonePrefix: string;
+  isActive?: boolean;
+  isOperational?: boolean;
+  sortOrder?: number;
+}
+
+export interface UpdateRegionData {
+  code?: string;
+  nameAr?: string;
+  nameEn?: string;
+  currency?: string;
+  phonePrefix?: string;
+  isActive?: boolean;
+  isOperational?: boolean;
+  sortOrder?: number;
+}
+
 export interface City {
   id: string;
-  name: string;
+  nameAr: string;
+  nameEn: string;
+  regionId: string;
+  isActive: boolean;
+  isOperational: boolean;
+  sortOrder: number;
   createdAt: string;
+  updatedAt: string;
+  region?: Region;
+  quarters?: Quarter[];
+}
+
+export interface CreateCityData {
+  nameAr: string;
+  nameEn: string;
+  regionId: string;
+  isActive?: boolean;
+  isOperational?: boolean;
+  sortOrder?: number;
+}
+
+export interface UpdateCityData {
+  nameAr?: string;
+  nameEn?: string;
+  regionId?: string;
+  isActive?: boolean;
+  isOperational?: boolean;
+  sortOrder?: number;
 }
 
 export interface Quarter {
   id: string;
-  cityId: string;
   name: string;
+  cityId: string;
   createdAt: string;
+  updatedAt: string;
 }
 
 // Delivery Partner Types
@@ -829,6 +893,13 @@ export interface BrandFormData {
 }
 
 // Product Types
+export interface ProductCity {
+  id: string;
+  productId: string;
+  cityId: string;
+  city: City;
+}
+
 export interface Product {
   id: string;
   nameAr: string;
@@ -853,6 +924,7 @@ export interface Product {
   // Relations
   category?: ProductCategory;
   brand?: Brand;
+  cities?: ProductCity[];
 }
 
 export interface ProductFormData {
@@ -872,6 +944,7 @@ export interface ProductFormData {
   sku?: string;
   tags: string[];
   metadata?: any;
+  cityIds?: string[];
 }
 
 export interface ProductFilters {

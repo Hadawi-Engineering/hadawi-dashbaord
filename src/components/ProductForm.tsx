@@ -1,12 +1,14 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { X } from 'lucide-react';
-import type { ProductFormData, ProductCategory, Brand } from '../types';
+import type { ProductFormData, ProductCategory, Brand, City } from '../types';
 import { OCCASION_TYPES, RECIPIENT_TYPES } from '../types';
 import ImageUpload from './ui/ImageUpload';
 import MultiSelect from './ui/MultiSelect';
+import CityMultiSelect from './ui/CityMultiSelect';
 import TagInput from './ui/TagInput';
 import { useScrollLock } from '../hooks/useScrollLock';
+import adminService from '../services/adminService';
 
 interface ProductFormProps {
     product?: ProductFormData & { id?: string };
@@ -26,6 +28,9 @@ export default function ProductForm({
     isLoading = false
 }: ProductFormProps) {
     useScrollLock(true);
+    const [cities, setCities] = useState<City[]>([]);
+    const [loadingCities, setLoadingCities] = useState(true);
+
     const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<ProductFormData>({
         defaultValues: product || {
             nameAr: '',
@@ -43,6 +48,7 @@ export default function ProductForm({
             stock: 0,
             sku: '',
             tags: [],
+            cityIds: [],
         }
     });
 
@@ -50,6 +56,24 @@ export default function ProductForm({
     const occasionTypes = watch('occasionTypes') || [];
     const recipientTypes = watch('recipientTypes') || [];
     const tags = watch('tags') || [];
+    const cityIds = watch('cityIds') || [];
+
+    // Fetch operational cities
+    useEffect(() => {
+        const fetchCities = async () => {
+            try {
+                setLoadingCities(true);
+                const data = await adminService.getOperationalCities();
+                setCities(data);
+            } catch (error) {
+                console.error('Failed to fetch cities:', error);
+            } finally {
+                setLoadingCities(false);
+            }
+        };
+
+        fetchCities();
+    }, []);
 
     const handleFormSubmit = (data: ProductFormData) => {
         if (data.images.length === 0) {
@@ -279,6 +303,21 @@ export default function ProductForm({
                             onChange={(value) => setValue('tags', value)}
                             placeholder="Type and press Enter to add tags"
                         />
+                    </div>
+
+                    {/* Cities */}
+                    <div>
+                        <CityMultiSelect
+                            label="Available Cities"
+                            cities={cities}
+                            value={cityIds}
+                            onChange={(value) => setValue('cityIds', value)}
+                            placeholder="Select cities where this product is available"
+                            loading={loadingCities}
+                        />
+                        <p className="mt-1 text-sm text-gray-500">
+                            Select cities where this product is available for purchase. Leave empty for all cities.
+                        </p>
                     </div>
 
                     {/* Status Toggles */}
