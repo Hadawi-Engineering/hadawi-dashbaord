@@ -9,7 +9,12 @@ import type {
   PaymentStats,
   PromoCode,
   Banner,
+  Region,
+  CreateRegionData,
+  UpdateRegionData,
   City,
+  CreateCityData,
+  UpdateCityData,
   Quarter,
   DeliveryPartner,
   DeliveryPartnerCreate,
@@ -44,6 +49,17 @@ import type {
   SmsBalance,
   Company,
   Offer,
+  Product,
+  ProductFormData,
+  ProductFilters,
+  ProductsResponse,
+  ProductCategory,
+  CategoryFormData,
+  Brand,
+  BrandFormData,
+  OccasionType,
+  OccasionTypeFormData,
+  PackagingFormData,
 } from '../types';
 
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
@@ -244,17 +260,74 @@ class AdminService {
     await this.api.delete(`/banners/${bannerId}`);
   }
 
-  // ==================== CITIES & QUARTERS ====================
+  // ==================== REGIONS ====================
+
+  async getRegions(): Promise<Region[]> {
+    const { data } = await this.api.get<Region[]>('/regions');
+    return data;
+  }
+
+  async getOperationalRegions(): Promise<Region[]> {
+    const { data } = await this.api.get<Region[]>('/regions/operational');
+    return data;
+  }
+
+  async getRegion(id: string): Promise<Region> {
+    const { data } = await this.api.get<Region>(`/regions/${id}`);
+    return data;
+  }
+
+  async createRegion(regionData: CreateRegionData): Promise<Region> {
+    const { data } = await this.api.post<Region>('/regions', regionData);
+    return data;
+  }
+
+  async updateRegion(id: string, regionData: UpdateRegionData): Promise<Region> {
+    const { data } = await this.api.patch<Region>(`/regions/${id}`, regionData);
+    return data;
+  }
+
+  async toggleRegionOperational(id: string): Promise<Region> {
+    const { data } = await this.api.patch<Region>(`/regions/${id}/toggle-operational`);
+    return data;
+  }
+
+  async deleteRegion(id: string): Promise<void> {
+    await this.api.delete(`/regions/${id}`);
+  }
+
+  // ==================== CITIES ====================
 
   async getCities(): Promise<City[]> {
     const { data } = await this.api.get<City[]>('/cities');
     return data;
   }
 
-  async createCity(cityData: { name: string }): Promise<City> {
+  async getOperationalCities(): Promise<City[]> {
+    const { data } = await this.api.get<City[]>('/cities/operational');
+    return data;
+  }
+
+  async getCity(id: string): Promise<City> {
+    const { data } = await this.api.get<City>(`/cities/${id}`);
+    return data;
+  }
+
+  async createCity(cityData: CreateCityData): Promise<City> {
     const { data } = await this.api.post<City>('/cities', cityData);
     return data;
   }
+
+  async updateCity(id: string, cityData: UpdateCityData): Promise<City> {
+    const { data } = await this.api.patch<City>(`/cities/${id}`, cityData);
+    return data;
+  }
+
+  async deleteCity(id: string): Promise<void> {
+    await this.api.delete(`/cities/${id}`);
+  }
+
+  // ==================== QUARTERS ====================
 
   async getQuarters(cityId: string): Promise<Quarter[]> {
     const { data } = await this.api.get<Quarter[]>(`/cities/${cityId}/quarters`);
@@ -366,33 +439,33 @@ class AdminService {
 
   // ==================== OCCASION TYPES ====================
 
-  async getOccasionTypes(): Promise<any[]> {
-    const { data } = await this.api.get<any[]>('/occasion-types');
+  async getOccasionTypes(): Promise<OccasionType[]> {
+    const { data } = await this.api.get<OccasionType[]>('/occasion-types');
     return data;
   }
 
-  async getActiveOccasionTypes(): Promise<any[]> {
-    const { data } = await this.api.get<any[]>('/occasion-types/active');
+  async getActiveOccasionTypes(): Promise<OccasionType[]> {
+    const { data } = await this.api.get<OccasionType[]>('/occasion-types/active');
     return data;
   }
 
-  async getOccasionType(id: string): Promise<any> {
-    const { data } = await this.api.get<any>(`/occasion-types/${id}`);
+  async getOccasionType(id: string): Promise<OccasionType> {
+    const { data } = await this.api.get<OccasionType>(`/occasion-types/${id}`);
     return data;
   }
 
-  async getOccasionTypeByKey(key: string): Promise<any> {
-    const { data } = await this.api.get<any>(`/occasion-types/key/${key}`);
+  async getOccasionTypeByKey(key: string): Promise<OccasionType> {
+    const { data } = await this.api.get<OccasionType>(`/occasion-types/key/${key}`);
     return data;
   }
 
-  async createOccasionType(typeData: any): Promise<any> {
-    const { data } = await this.api.post<any>('/occasion-types', typeData);
+  async createOccasionType(typeData: OccasionTypeFormData): Promise<OccasionType> {
+    const { data } = await this.api.post<OccasionType>('/occasion-types', typeData);
     return data;
   }
 
-  async updateOccasionType(id: string, typeData: any): Promise<any> {
-    const { data } = await this.api.patch<any>(`/occasion-types/${id}`, typeData);
+  async updateOccasionType(id: string, typeData: Partial<OccasionTypeFormData>): Promise<OccasionType> {
+    const { data } = await this.api.patch<OccasionType>(`/occasion-types/${id}`, typeData);
     return data;
   }
 
@@ -480,12 +553,12 @@ class AdminService {
     return data;
   }
 
-  async createPackagingType(packagingData: Omit<PackagingType, 'id' | 'createdAt' | 'updatedAt'>): Promise<PackagingType> {
+  async createPackagingType(packagingData: PackagingFormData): Promise<PackagingType> {
     const { data } = await this.api.post<PackagingType>('/packaging-types', packagingData);
     return data;
   }
 
-  async updatePackagingType(id: string, packagingData: Partial<PackagingType>): Promise<PackagingType> {
+  async updatePackagingType(id: string, packagingData: Partial<PackagingFormData>): Promise<PackagingType> {
     const { data } = await this.api.patch<PackagingType>(`/packaging-types/${id}`, packagingData);
     return data;
   }
@@ -693,6 +766,93 @@ class AdminService {
 
   async deleteOffer(id: string): Promise<void> {
     await this.api.delete(`/offers/${id}`);
+  }
+
+  // ==================== PRODUCTS ====================
+
+  async getProducts(params: ProductFilters = {}): Promise<ProductsResponse> {
+    const { data } = await this.api.get<ProductsResponse>('/products', { params });
+    return data;
+  }
+
+  async getFeaturedProducts(limit: number = 10): Promise<Product[]> {
+    const { data } = await this.api.get<Product[]>('/products/featured', { params: { limit } });
+    return data;
+  }
+
+  async getProduct(id: string): Promise<Product> {
+    const { data } = await this.api.get<Product>(`/products/${id}`);
+    return data;
+  }
+
+  async createProduct(productData: ProductFormData): Promise<Product> {
+    const { data } = await this.api.post<Product>('/products', productData);
+    return data;
+  }
+
+  async updateProduct(id: string, productData: Partial<ProductFormData>): Promise<Product> {
+    const { data } = await this.api.patch<Product>(`/products/${id}`, productData);
+    return data;
+  }
+
+  async deleteProduct(id: string): Promise<void> {
+    await this.api.delete(`/products/${id}`);
+  }
+
+  // ==================== PRODUCT CATEGORIES ====================
+
+  async getProductCategories(includeInactive: boolean = false): Promise<ProductCategory[]> {
+    const { data } = await this.api.get<ProductCategory[]>('/product-categories', {
+      params: { includeInactive }
+    });
+    return data;
+  }
+
+  async getProductCategory(id: string): Promise<ProductCategory> {
+    const { data } = await this.api.get<ProductCategory>(`/product-categories/${id}`);
+    return data;
+  }
+
+  async createProductCategory(categoryData: CategoryFormData): Promise<ProductCategory> {
+    const { data } = await this.api.post<ProductCategory>('/product-categories', categoryData);
+    return data;
+  }
+
+  async updateProductCategory(id: string, categoryData: Partial<CategoryFormData>): Promise<ProductCategory> {
+    const { data } = await this.api.patch<ProductCategory>(`/product-categories/${id}`, categoryData);
+    return data;
+  }
+
+  async deleteProductCategory(id: string): Promise<void> {
+    await this.api.delete(`/product-categories/${id}`);
+  }
+
+  // ==================== BRANDS ====================
+
+  async getBrands(includeInactive: boolean = false): Promise<Brand[]> {
+    const { data } = await this.api.get<Brand[]>('/brands', {
+      params: { includeInactive }
+    });
+    return data;
+  }
+
+  async getBrand(id: string): Promise<Brand> {
+    const { data } = await this.api.get<Brand>(`/brands/${id}`);
+    return data;
+  }
+
+  async createBrand(brandData: BrandFormData): Promise<Brand> {
+    const { data } = await this.api.post<Brand>('/brands', brandData);
+    return data;
+  }
+
+  async updateBrand(id: string, brandData: Partial<BrandFormData>): Promise<Brand> {
+    const { data } = await this.api.patch<Brand>(`/brands/${id}`, brandData);
+    return data;
+  }
+
+  async deleteBrand(id: string): Promise<void> {
+    await this.api.delete(`/brands/${id}`);
   }
 }
 

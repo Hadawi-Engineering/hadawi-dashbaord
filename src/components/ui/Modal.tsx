@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { X } from 'lucide-react';
+import { useScrollLock } from '../../hooks/useScrollLock';
 import clsx from 'clsx';
 
 interface ModalProps {
@@ -11,25 +12,15 @@ interface ModalProps {
   className?: string;
 }
 
-export function Modal({ 
-  isOpen, 
-  onClose, 
-  title, 
-  children, 
+export function Modal({
+  isOpen,
+  onClose,
+  title,
+  children,
   size = 'md',
-  className 
+  className
 }: ModalProps) {
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [isOpen]);
-
+  useScrollLock(isOpen);
   if (!isOpen) return null;
 
   const sizes = {
@@ -42,14 +33,14 @@ export function Modal({
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
       {/* Backdrop */}
-      <div 
+      <div
         className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
         onClick={onClose}
       />
-      
+
       {/* Modal */}
       <div className="flex min-h-full items-center justify-center p-4">
-        <div 
+        <div
           className={clsx(
             'relative bg-white rounded-lg shadow-xl w-full',
             sizes[size],
@@ -69,7 +60,7 @@ export function Modal({
               <X size={24} />
             </button>
           </div>
-          
+
           {/* Body */}
           <div className="p-6">
             {children}

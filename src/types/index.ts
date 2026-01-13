@@ -132,18 +132,82 @@ export interface Banner {
   createdAt: string;
 }
 
-// City & Quarter Types
+// Region & City & Quarter Types
+export interface Region {
+  id: string;
+  code: string;
+  nameAr: string;
+  nameEn: string;
+  currency: string;
+  phonePrefix: string;
+  isActive: boolean;
+  isOperational: boolean;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+  cities?: City[];
+}
+
+export interface CreateRegionData {
+  code: string;
+  nameAr: string;
+  nameEn: string;
+  currency?: string;
+  phonePrefix: string;
+  isActive?: boolean;
+  isOperational?: boolean;
+  sortOrder?: number;
+}
+
+export interface UpdateRegionData {
+  code?: string;
+  nameAr?: string;
+  nameEn?: string;
+  currency?: string;
+  phonePrefix?: string;
+  isActive?: boolean;
+  isOperational?: boolean;
+  sortOrder?: number;
+}
+
 export interface City {
   id: string;
-  name: string;
+  nameAr: string;
+  nameEn: string;
+  regionId: string;
+  isActive: boolean;
+  isOperational: boolean;
+  sortOrder: number;
   createdAt: string;
+  updatedAt: string;
+  region?: Region;
+  quarters?: Quarter[];
+}
+
+export interface CreateCityData {
+  nameAr: string;
+  nameEn: string;
+  regionId: string;
+  isActive?: boolean;
+  isOperational?: boolean;
+  sortOrder?: number;
+}
+
+export interface UpdateCityData {
+  nameAr?: string;
+  nameEn?: string;
+  regionId?: string;
+  isActive?: boolean;
+  isOperational?: boolean;
+  sortOrder?: number;
 }
 
 export interface Quarter {
   id: string;
-  cityId: string;
   name: string;
+  cityId: string;
   createdAt: string;
+  updatedAt: string;
 }
 
 // Delivery Partner Types
@@ -351,13 +415,27 @@ export interface TaxStatistics {
 // Packaging Types
 export interface PackagingType {
   id: string;
-  name: string;
+  nameAr: string;
+  nameEn: string;
+  descriptionAr?: string;
+  descriptionEn?: string;
   images: string[];
   amount: number;
   giftType: 'money' | 'gift';
   status: 'active' | 'inactive' | 'archived';
   createdAt: string;
   updatedAt: string;
+}
+
+export interface PackagingFormData {
+  nameAr: string;
+  nameEn: string;
+  descriptionAr?: string;
+  descriptionEn?: string;
+  images: string[];
+  amount: number;
+  giftType: 'money' | 'gift';
+  status: 'active' | 'inactive' | 'archived';
 }
 
 export interface PackagingStatistics {
@@ -685,4 +763,207 @@ export interface Offer {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
+}
+
+// Product Catalog Types
+
+// Occasion and Recipient Type Constants
+export const OCCASION_TYPES = [
+  'birthday',
+  'wedding',
+  'anniversary',
+  'graduation',
+  'new_baby',
+  'congratulations',
+  'get_well_soon',
+  'thank_you',
+  'love',
+  'sympathy',
+  'housewarming',
+  'retirement',
+] as const;
+
+export const RECIPIENT_TYPES = [
+  'father',
+  'mother',
+  'husband',
+  'wife',
+  'son',
+  'daughter',
+  'brother',
+  'sister',
+  'grandfather',
+  'grandmother',
+  'friend',
+  'colleague',
+  'boss',
+  'teacher',
+] as const;
+
+export interface OccasionType {
+  id: string;
+  key: string;
+  nameAr: string;
+  nameEn: string;
+  descriptionAr?: string;
+  descriptionEn?: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface OccasionTypeFormData {
+  key: string;
+  nameAr: string;
+  nameEn: string;
+  descriptionAr?: string;
+  descriptionEn?: string;
+  isActive: boolean;
+}
+
+// Product Category Types
+export interface ProductCategory {
+  id: string;
+  nameAr: string;
+  nameEn: string;
+  descriptionAr?: string;
+  descriptionEn?: string;
+  image?: string;
+  icon?: string;
+  parentId?: string;
+  isActive: boolean;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+
+  // Relations
+  products?: Product[];
+  parent?: ProductCategory;
+  children?: ProductCategory[];
+  _count?: {
+    products: number;
+  };
+}
+
+export interface CategoryFormData {
+  nameAr: string;
+  nameEn: string;
+  descriptionAr?: string;
+  descriptionEn?: string;
+  image?: string;
+  icon?: string;
+  parentId?: string;
+  isActive: boolean;
+  sortOrder: number;
+}
+
+export interface CategoryTree extends ProductCategory {
+  children: CategoryTree[];
+  level: number;
+}
+
+// Brand Types
+export interface Brand {
+  id: string;
+  nameAr: string;
+  nameEn: string;
+  descriptionAr?: string;
+  descriptionEn?: string;
+  logo?: string;
+  website?: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+
+  // Relations
+  products?: Product[];
+  _count?: {
+    products: number;
+  };
+}
+
+export interface BrandFormData {
+  nameAr: string;
+  nameEn: string;
+  descriptionAr?: string;
+  descriptionEn?: string;
+  logo?: string;
+  website?: string;
+  isActive: boolean;
+}
+
+// Product Types
+export interface ProductCity {
+  id: string;
+  productId: string;
+  cityId: string;
+  city: City;
+}
+
+export interface Product {
+  id: string;
+  nameAr: string;
+  nameEn: string;
+  descriptionAr?: string;
+  descriptionEn?: string;
+  price: number;
+  images: string[];
+  categoryId?: string;
+  brandId?: string;
+  occasionTypes: string[];
+  recipientTypes: string[];
+  isActive: boolean;
+  isFeatured: boolean;
+  stock: number;
+  sku?: string;
+  tags: string[];
+  metadata?: any;
+  createdAt: string;
+  updatedAt: string;
+
+  // Relations
+  category?: ProductCategory;
+  brand?: Brand;
+  cities?: ProductCity[];
+}
+
+export interface ProductFormData {
+  nameAr: string;
+  nameEn: string;
+  descriptionAr?: string;
+  descriptionEn?: string;
+  price: number;
+  images: string[];
+  categoryId?: string;
+  brandId?: string;
+  occasionTypes: string[];
+  recipientTypes: string[];
+  isActive: boolean;
+  isFeatured: boolean;
+  stock: number;
+  sku?: string;
+  tags: string[];
+  metadata?: any;
+  cityIds?: string[];
+}
+
+export interface ProductFilters {
+  page?: number;
+  limit?: number;
+  categoryId?: string;
+  brandId?: string;
+  occasionType?: string;
+  search?: string;
+  isActive?: boolean;
+  isFeatured?: boolean;
+}
+
+export interface ProductsResponse {
+  data: Product[];
+  meta: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
 }

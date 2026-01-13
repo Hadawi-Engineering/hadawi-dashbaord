@@ -23,10 +23,16 @@ import {
   ChevronRight,
   Bell,
   Building2,
-  Percent
+  Percent,
+  Package2,
+  Folder,
+  Tags,
+  Globe,
+  MapPin,
 } from 'lucide-react';
 import adminService from '../services/adminService';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useScrollLock } from '../hooks/useScrollLock';
 
 interface MenuItem {
   path: string;
@@ -37,7 +43,10 @@ interface MenuItem {
 
 export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  useScrollLock(sidebarOpen);
   const [configOpen, setConfigOpen] = useState(false);
+  const [catalogOpen, setCatalogOpen] = useState(false);
+  const [locationsOpen, setLocationsOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const admin = adminService.getCurrentAdmin();
@@ -56,6 +65,16 @@ export default function Layout() {
     { path: '/dashboard', icon: LayoutDashboard, label: t('nav.dashboard') },
     { path: '/users', icon: Users, label: t('nav.users') },
     { path: '/occasions', icon: Calendar, label: t('nav.occasions') },
+    {
+      path: '/catalog',
+      icon: Package2,
+      label: t('nav.catalog'),
+      children: [
+        { path: '/products', icon: Package2, label: t('nav.products') },
+        { path: '/categories', icon: Folder, label: t('nav.categories') },
+        { path: '/brands', icon: Tags, label: t('nav.brands') },
+      ]
+    },
     { path: '/payments', icon: CreditCard, label: t('nav.payments') },
     { path: '/promo-codes', icon: Tag, label: t('nav.promoCodes') },
     { path: '/banners', icon: Image, label: t('nav.banners') },
@@ -65,6 +84,17 @@ export default function Layout() {
     { path: '/withdrawals', icon: Wallet, label: t('nav.withdrawals') },
     { path: '/delivery-partners', icon: Truck, label: t('nav.deliveryPartners') },
     { path: '/delivery-records', icon: Package, label: t('nav.deliveryRecords') },
+
+    {
+      path: '/locations',
+      icon: Globe,
+      label: t('nav.locations'),
+      children: [
+        { path: '/regions', icon: Globe, label: t('nav.regions') },
+        { path: '/cities', icon: MapPin, label: t('nav.cities') },
+      ]
+    },
+
     {
       path: '/configuration',
       icon: Settings,
@@ -106,15 +136,23 @@ export default function Layout() {
             {menuItems.map((item) => {
               const Icon = item.icon;
               const hasChildren = item.children && item.children.length > 0;
+              const isCatalogItem = item.path === '/catalog';
               const isConfigItem = item.path === '/configuration';
+              const isLocationsItem = item.path === '/locations';
+              const isCatalogActive = isCatalogItem && (location.pathname === '/products' || location.pathname === '/categories' || location.pathname === '/brands');
               const isConfigActive = isConfigItem && (location.pathname === '/occasion-types' || location.pathname === '/taxes' || location.pathname === '/packaging');
+              const isLocationsActive = isLocationsItem && (location.pathname === '/regions' || location.pathname === '/cities');
 
               if (hasChildren) {
+                const isOpen = isCatalogItem ? catalogOpen : isConfigItem ? configOpen : locationsOpen;
+                const toggleOpen = isCatalogItem ? () => setCatalogOpen(!catalogOpen) : isConfigItem ? () => setConfigOpen(!configOpen) : () => setLocationsOpen(!locationsOpen);
+                const isSubMenuActive = isCatalogItem ? isCatalogActive : isConfigItem ? isConfigActive : isLocationsActive;
+
                 return (
                   <div key={item.path}>
                     <button
-                      onClick={() => setConfigOpen(!configOpen)}
-                      className={`flex items-center justify-between w-full px-4 py-3 rounded-lg transition-colors ${isConfigActive
+                      onClick={toggleOpen}
+                      className={`flex items-center justify-between w-full px-4 py-3 rounded-lg transition-colors ${isSubMenuActive
                         ? 'bg-primary-50 text-primary-700 font-medium'
                         : 'text-gray-700 hover:bg-gray-50'
                         }`}
@@ -124,13 +162,13 @@ export default function Layout() {
                         <span>{item.label}</span>
                       </div>
                       {isRTL ? (
-                        configOpen ? <ChevronRight size={16} /> : <ChevronDown size={16} />
+                        isOpen ? <ChevronRight size={16} /> : <ChevronDown size={16} />
                       ) : (
-                        configOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />
+                        isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />
                       )}
                     </button>
 
-                    {configOpen && (
+                    {isOpen && (
                       <div className={`ml-4 ${isRTL ? 'mr-4' : 'ml-4'} space-y-1`}>
                         {item.children!.map((child) => {
                           const ChildIcon = child.icon;

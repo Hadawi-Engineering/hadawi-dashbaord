@@ -6,19 +6,10 @@ import Card from '../components/ui/Card';
 import Table from '../components/ui/Table';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
-import Modal from '../components/ui/Modal';
 import Input from '../components/ui/Input';
+import OccasionTypeForm from '../components/OccasionTypeForm';
 import { useLanguage } from '../contexts/LanguageContext';
-
-interface OccasionType {
-  id: string;
-  key: string;
-  value: string; // Arabic name
-  description: string;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
+import type { OccasionType, OccasionTypeFormData } from '../types';
 
 export default function OccasionTypes() {
   const { t, isRTL } = useLanguage();
@@ -26,29 +17,18 @@ export default function OccasionTypes() {
   const [editingType, setEditingType] = useState<OccasionType | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterActive, setFilterActive] = useState<'all' | 'active' | 'inactive'>('all');
-  const [formData, setFormData] = useState({
-    key: '',
-    value: '',
-    description: '',
-    isActive: true,
-  });
   const queryClient = useQueryClient();
 
   // Fetch occasion types
   const { data: occasionTypes, isLoading } = useQuery({
-    queryKey: ['occasion-types', filterActive],
-    queryFn: () => {
-      if (filterActive === 'active') {
-        return adminService.getActiveOccasionTypes();
-      }
-      return adminService.getOccasionTypes();
-    },
+    queryKey: ['occasion-types'],
+    queryFn: () => adminService.getOccasionTypes(),
   });
 
 
   // Create mutation
   const createMutation = useMutation({
-    mutationFn: (data: any) => adminService.createOccasionType(data),
+    mutationFn: (data: OccasionTypeFormData) => adminService.createOccasionType(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['occasion-types'] });
       handleCloseModal();
@@ -57,7 +37,7 @@ export default function OccasionTypes() {
 
   // Update mutation
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: any }) =>
+    mutationFn: ({ id, data }: { id: string; data: Partial<OccasionTypeFormData> }) =>
       adminService.updateOccasionType(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['occasion-types'] });
@@ -84,20 +64,8 @@ export default function OccasionTypes() {
   const handleOpenModal = (type?: OccasionType) => {
     if (type) {
       setEditingType(type);
-      setFormData({
-        key: type.key,
-        value: type.value,
-        description: type.description,
-        isActive: type.isActive,
-      });
     } else {
       setEditingType(null);
-      setFormData({
-        key: '',
-        value: '',
-        description: '',
-        isActive: true,
-      });
     }
     setShowModal(true);
   };
@@ -107,9 +75,7 @@ export default function OccasionTypes() {
     setEditingType(null);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleSubmit = async (formData: OccasionTypeFormData) => {
     try {
       if (editingType) {
         await updateMutation.mutateAsync({ id: editingType.id, data: formData });
@@ -117,7 +83,7 @@ export default function OccasionTypes() {
         await createMutation.mutateAsync(formData);
       }
     } catch (error) {
-      alert(t('common.error'));
+      // Error handled by mutation
     }
   };
 
@@ -148,16 +114,19 @@ export default function OccasionTypes() {
   };
 
   const filteredTypes = occasionTypes?.filter((type) => {
-    const matchesSearch = 
-      type.value.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      type.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      type.key.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesFilter = 
-      filterActive === 'all' || 
+    const searchLower = searchTerm.toLowerCase();
+    const matchesSearch =
+      type.nameEn.toLowerCase().includes(searchLower) ||
+      type.nameAr.toLowerCase().includes(searchLower) ||
+      type.descriptionEn?.toLowerCase().includes(searchLower) ||
+      type.descriptionAr?.toLowerCase().includes(searchLower) ||
+      type.key.toLowerCase().includes(searchLower);
+
+    const matchesFilter =
+      filterActive === 'all' ||
       (filterActive === 'active' && type.isActive) ||
       (filterActive === 'inactive' && !type.isActive);
-    
+
     return matchesSearch && matchesFilter;
   });
 
@@ -266,7 +235,7 @@ export default function OccasionTypes() {
           <Table.Head>
             <Table.Row>
               <Table.Th>{t('occasionTypes.key')}</Table.Th>
-              <Table.Th>{t('occasionTypes.value')}</Table.Th>
+              <Table.Th>{t('occasionTypes.name')}</Table.Th>
               <Table.Th>{t('occasionTypes.description')}</Table.Th>
               <Table.Th>{t('common.status')}</Table.Th>
               <Table.Th>{t('common.date')}</Table.Th>
@@ -280,10 +249,12 @@ export default function OccasionTypes() {
                   <div className="font-mono text-sm text-gray-900">{type.key}</div>
                 </Table.Td>
                 <Table.Td>
-                  <div className="font-medium text-gray-900">{type.value}</div>
+                  <div className="font-medium text-gray-900">{type.nameEn}</div>
+                  <div className="text-xs text-gray-500" dir="rtl">{type.nameAr}</div>
                 </Table.Td>
                 <Table.Td>
-                  <div className="text-gray-600">{type.description}</div>
+                  <div className="text-gray-600 text-sm line-clamp-2">{type.descriptionEn}</div>
+                  <div className="text-gray-500 text-xs line-clamp-2" dir="rtl">{type.descriptionAr}</div>
                 </Table.Td>
                 <Table.Td>
                   {getStatusBadge(type.isActive)}
@@ -330,63 +301,13 @@ export default function OccasionTypes() {
 
       {/* Create/Edit Modal */}
       {showModal && (
-        <Modal
+        <OccasionTypeForm
           isOpen={showModal}
           onClose={handleCloseModal}
-          title={editingType ? t('occasionTypes.edit') : t('occasionTypes.add')}
-          size="lg"
-        >
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-1 gap-4">
-              <Input
-                label={t('occasionTypes.key')}
-                value={formData.key}
-                onChange={(e) => setFormData({ ...formData, key: e.target.value })}
-                placeholder="birthday"
-                required
-              />
-
-              <Input
-                label={t('occasionTypes.value')}
-                value={formData.value}
-                onChange={(e) => setFormData({ ...formData, value: e.target.value })}
-                placeholder="عيد ميلاد"
-                required
-              />
-
-              <Input
-                label={t('occasionTypes.description')}
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder="Birthday celebrations"
-                multiline
-                rows={3}
-              />
-            </div>
-
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="isActive"
-                checked={formData.isActive}
-                onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                className="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
-              />
-              <label htmlFor="isActive" className="text-sm font-medium text-gray-700">
-                {t('common.active')}
-              </label>
-            </div>
-
-            <div className="flex gap-3 pt-4">
-              <Button type="submit" loading={createMutation.isPending || updateMutation.isPending} className="flex-1">
-                {editingType ? t('common.update') : t('common.add')}
-              </Button>
-              <Button type="button" variant="secondary" onClick={handleCloseModal} className="flex-1">
-                {t('common.cancel')}
-              </Button>
-            </div>
-          </form>
-        </Modal>
+          onSubmit={handleSubmit}
+          initialData={editingType}
+          loading={createMutation.isPending || updateMutation.isPending}
+        />
       )}
 
     </div>
