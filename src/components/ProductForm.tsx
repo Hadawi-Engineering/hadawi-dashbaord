@@ -45,6 +45,7 @@ export default function ProductForm({
             recipientTypes: [],
             isActive: true,
             isFeatured: false,
+            isAdditionalGift: false,
             stock: 0,
             sku: '',
             tags: [],
@@ -324,24 +325,43 @@ export default function ProductForm({
                     <div className="space-y-4">
                         <h3 className="text-lg font-medium text-gray-900">Status</h3>
 
-                        <div className="flex items-center gap-4">
-                            <label className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                    {...register('isActive')}
-                                    type="checkbox"
-                                    className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
-                                />
-                                <span className="text-sm font-medium text-gray-700">Active</span>
-                            </label>
+                        <div className="flex flex-col gap-3">
+                            <div className="flex items-center gap-4">
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                    <input
+                                        {...register('isActive')}
+                                        type="checkbox"
+                                        className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                                    />
+                                    <span className="text-sm font-medium text-gray-700">Active</span>
+                                </label>
 
-                            <label className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                    {...register('isFeatured')}
-                                    type="checkbox"
-                                    className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
-                                />
-                                <span className="text-sm font-medium text-gray-700">Featured</span>
-                            </label>
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                    <input
+                                        {...register('isFeatured')}
+                                        type="checkbox"
+                                        className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                                    />
+                                    <span className="text-sm font-medium text-gray-700">Featured</span>
+                                </label>
+                            </div>
+
+                            {/* Additional Gift Section - Highlighted */}
+                            <div className="bg-orange-50 border-l-4 border-orange-400 p-4 rounded-r-lg">
+                                <label className="flex items-start gap-2 cursor-pointer">
+                                    <input
+                                        {...register('isAdditionalGift')}
+                                        type="checkbox"
+                                        className="w-4 h-4 mt-1 text-orange-600 border-gray-300 rounded focus:ring-orange-500"
+                                    />
+                                    <div className="flex-1">
+                                        <span className="text-sm font-medium text-gray-900"> Additional Gift</span>
+                                        <p className="text-xs text-gray-600 mt-1">
+                                            Mark this product as an additional gift option that users can add to their occasions as optional extras.
+                                        </p>
+                                    </div>
+                                </label>
+                            </div>
                         </div>
                     </div>
 

@@ -31,6 +31,7 @@ export default function PackagingForm({
         images: [],
         amount: 0,
         giftType: 'gift',
+        packagingProvider: 'hadawi',
         status: 'active',
     });
 
@@ -44,6 +45,7 @@ export default function PackagingForm({
                 images: initialData.images || [],
                 amount: initialData.amount || 0,
                 giftType: initialData.giftType,
+                packagingProvider: initialData.packagingProvider,
                 status: initialData.status,
             });
         } else {
@@ -55,6 +57,7 @@ export default function PackagingForm({
                 images: [],
                 amount: 0,
                 giftType: 'gift',
+                packagingProvider: 'hadawi',
                 status: 'active',
             });
         }
@@ -155,6 +158,44 @@ export default function PackagingForm({
                             <option value="gift">{t('packaging.giftTypeOptions.gift')}</option>
                             <option value="money">{t('packaging.giftTypeOptions.money')}</option>
                         </select>
+                    </div>
+                </div>
+
+                {/* Packaging Provider Selection */}
+                <div className="space-y-3">
+                    <label className="block text-sm font-medium text-gray-700">
+                        Packaging Provider
+                    </label>
+                    <div className="space-y-2">
+                        <label className="flex items-start gap-3 p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors">
+                            <input
+                                type="radio"
+                                name="packagingProvider"
+                                value="hadawi"
+                                checked={formData.packagingProvider === 'hadawi'}
+                                onChange={(e) => setFormData({ ...formData, packagingProvider: e.target.value as 'hadawi' | 'brand' })}
+                                className="w-4 h-4 mt-1 text-blue-600 border-gray-300 focus:ring-blue-500"
+                            />
+                            <div className="flex-1">
+                                <div className="font-semibold text-gray-900"> Hadawi Packaging</div>
+                                <div className="text-sm text-gray-600 mt-1">Hadawi's own branded packaging</div>
+                            </div>
+                        </label>
+
+                        <label className="flex items-start gap-3 p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 hover:bg-purple-50 transition-colors">
+                            <input
+                                type="radio"
+                                name="packagingProvider"
+                                value="brand"
+                                checked={formData.packagingProvider === 'brand'}
+                                onChange={(e) => setFormData({ ...formData, packagingProvider: e.target.value as 'hadawi' | 'brand' })}
+                                className="w-4 h-4 mt-1 text-purple-600 border-gray-300 focus:ring-purple-500"
+                            />
+                            <div className="flex-1">
+                                <div className="font-semibold text-gray-900"> Brand Packaging</div>
+                                <div className="text-sm text-gray-600 mt-1">Third-party brand packaging</div>
+                            </div>
+                        </label>
                     </div>
                 </div>
 

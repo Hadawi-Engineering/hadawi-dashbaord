@@ -98,6 +98,7 @@ export default function Products() {
             recipientTypes: product.recipientTypes,
             isActive: product.isActive,
             isFeatured: product.isFeatured,
+            isAdditionalGift: product.isAdditionalGift,
             stock: product.stock,
             sku: product.sku || '',
             tags: product.tags,
@@ -140,7 +141,44 @@ export default function Products() {
             </div>
 
             {/* Filters */}
-            <div className="bg-white rounded-lg shadow p-4">
+            <div className="bg-white rounded-lg shadow p-4 space-y-4">
+                {/* Product Type Filter Toggle */}
+                <div className="flex flex-wrap items-center gap-3 pb-3 border-b border-gray-200">
+                    <span className="text-sm font-medium text-gray-700">Product Type:</span>
+                    <div className="flex gap-2">
+                        <button
+                            onClick={() => setFilters({ ...filters, isAdditionalGift: undefined, page: 1 })}
+                            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                                filters.isAdditionalGift === undefined
+                                    ? 'bg-primary-600 text-white'
+                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            }`}
+                        >
+                            All Products
+                        </button>
+                        <button
+                            onClick={() => setFilters({ ...filters, isAdditionalGift: false, page: 1 })}
+                            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                                filters.isAdditionalGift === false
+                                    ? 'bg-primary-600 text-white'
+                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            }`}
+                        >
+                            Regular Products
+                        </button>
+                        <button
+                            onClick={() => setFilters({ ...filters, isAdditionalGift: true, page: 1 })}
+                            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                                filters.isAdditionalGift === true
+                                    ? 'bg-orange-600 text-white'
+                                    : 'bg-orange-50 text-orange-700 hover:bg-orange-100 border border-orange-200'
+                            }`}
+                        >
+                             Additional Gifts
+                        </button>
+                    </div>
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
@@ -180,7 +218,7 @@ export default function Products() {
                     </select>
 
                     <button
-                        onClick={() => setFilters({ page: 1, limit: 20, search: '', categoryId: '', brandId: '' })}
+                        onClick={() => setFilters({ page: 1, limit: 20, search: '', categoryId: '', brandId: '', isAdditionalGift: undefined })}
                         className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
                     >
                         Clear Filters
@@ -207,6 +245,9 @@ export default function Products() {
                                         </th>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Name
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Type
                                         </th>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Category
@@ -252,6 +293,17 @@ export default function Products() {
                                                 <div className="text-xs text-gray-500" dir="rtl">{product.nameAr}</div>
                                                 {product.sku && (
                                                     <div className="text-xs text-gray-500 mt-1">SKU: {product.sku}</div>
+                                                )}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                {product.isAdditionalGift ? (
+                                                    <span className="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full bg-orange-100 text-orange-800 border border-orange-200">
+                                                         Gift
+                                                    </span>
+                                                ) : (
+                                                    <span className="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                                                        Product
+                                                    </span>
                                                 )}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">

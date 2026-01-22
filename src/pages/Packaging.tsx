@@ -13,6 +13,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import type { PackagingType, PackagingFormData } from '../types';
 
 type FilterStatus = 'all' | 'active' | 'inactive' | 'archived';
+type FilterProvider = 'all' | 'hadawi' | 'brand';
 
 export default function Packaging() {
   const { t, isRTL } = useLanguage();
@@ -23,6 +24,7 @@ export default function Packaging() {
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all');
+  const [filterProvider, setFilterProvider] = useState<FilterProvider>('all');
   const queryClient = useQueryClient();
 
   // Fetch packaging types
@@ -166,7 +168,11 @@ export default function Packaging() {
       packaging.descriptionEn?.toLowerCase().includes(searchLower) ||
       packaging.descriptionAr?.toLowerCase().includes(searchLower);
 
-    return matchesSearch;
+    const matchesProvider = 
+      filterProvider === 'all' || 
+      packaging.packagingProvider === filterProvider;
+
+    return matchesSearch && matchesProvider;
   });
 
   return (
@@ -225,6 +231,37 @@ export default function Packaging() {
         </div>
       )}
 
+      {/* Provider Filter */}
+      <Card>
+        <div className="p-6">
+          <div className="flex flex-col gap-3">
+            <span className="text-sm font-medium text-gray-700">Packaging Provider:</span>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant={filterProvider === 'all' ? 'primary' : 'secondary'}
+                onClick={() => setFilterProvider('all')}
+              >
+                All Packaging
+              </Button>
+              <Button
+                variant={filterProvider === 'hadawi' ? 'primary' : 'secondary'}
+                onClick={() => setFilterProvider('hadawi')}
+                className={filterProvider === 'hadawi' ? 'bg-blue-600 hover:bg-blue-700' : ''}
+              >
+                 Hadawi
+              </Button>
+              <Button
+                variant={filterProvider === 'brand' ? 'primary' : 'secondary'}
+                onClick={() => setFilterProvider('brand')}
+                className={filterProvider === 'brand' ? 'bg-purple-600 hover:bg-purple-700' : ''}
+              >
+                 Brand
+              </Button>
+            </div>
+          </div>
+        </div>
+      </Card>
+
       {/* Search and Filters */}
       <Card>
         <div className="p-6">
@@ -272,6 +309,7 @@ export default function Packaging() {
           <Table.Head>
             <Table.Row>
               <Table.Th>{t('packaging.name')}</Table.Th>
+              <Table.Th>Provider</Table.Th>
               <Table.Th>{t('packaging.images')}</Table.Th>
               <Table.Th>{t('packaging.amount')}</Table.Th>
               <Table.Th>{t('packaging.giftType')}</Table.Th>
@@ -286,6 +324,13 @@ export default function Packaging() {
                 <Table.Td>
                   <div className="font-medium text-gray-900">{packaging.nameEn}</div>
                   <div className="text-xs text-gray-500" dir="rtl">{packaging.nameAr}</div>
+                </Table.Td>
+                <Table.Td>
+                  {packaging.packagingProvider === 'hadawi' ? (
+                    <Badge color="blue"> Hadawi</Badge>
+                  ) : (
+                    <Badge color="purple"> Brand</Badge>
+                  )}
                 </Table.Td>
                 <Table.Td>
                   <div className="flex items-center gap-2">
