@@ -177,7 +177,7 @@ export default function PackagingForm({
                                 className="w-4 h-4 mt-1 text-blue-600 border-gray-300 focus:ring-blue-500"
                             />
                             <div className="flex-1">
-                                <div className="font-semibold text-gray-900">🏢 Hadawi Packaging</div>
+                                <div className="font-semibold text-gray-900"> Hadawi Packaging</div>
                                 <div className="text-sm text-gray-600 mt-1">Hadawi's own branded packaging</div>
                             </div>
                         </label>
@@ -192,7 +192,7 @@ export default function PackagingForm({
                                 className="w-4 h-4 mt-1 text-purple-600 border-gray-300 focus:ring-purple-500"
                             />
                             <div className="flex-1">
-                                <div className="font-semibold text-gray-900">🎁 Brand Packaging</div>
+                                <div className="font-semibold text-gray-900"> Brand Packaging</div>
                                 <div className="text-sm text-gray-600 mt-1">Third-party brand packaging</div>
                             </div>
                         </label>
