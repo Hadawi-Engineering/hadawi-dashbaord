@@ -132,7 +132,7 @@ export default function Layout() {
           </div>
 
           {/* Navigation - Scrollable */}
-          <nav className="flex-1 overflow-y-auto px-3 pb-4 space-y-2">
+          <nav className="flex-1 overflow-y-auto px-3 pb-32 space-y-2">
             {menuItems.map((item) => {
               const Icon = item.icon;
               const hasChildren = item.children && item.children.length > 0;
