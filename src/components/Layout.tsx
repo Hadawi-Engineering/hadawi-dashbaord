@@ -118,10 +118,10 @@ export default function Layout() {
         className={`fixed top-0 ${isRTL ? 'right-0' : 'left-0'} z-40 w-64 h-screen transition-transform ${sidebarOpen ? 'translate-x-0' : isRTL ? 'translate-x-full' : '-translate-x-full'
           } md:translate-x-0 bg-white ${isRTL ? 'border-l' : 'border-r'} border-gray-200`}
       >
-        <div className="h-full px-3 py-4 overflow-y-auto">
+        <div className="h-full flex flex-col">
           {/* Logo */}
-          <div className="mb-8 px-4">
-            <div className="flex items-center gap-3 mb-2">
+          <div className="flex-shrink-0 px-7 py-4">
+            <div className="flex items-center gap-3">
               <img
                 src="https://www.hadawi.sa/assets/images/hadawi.png"
                 alt="Hadawi Logo"
@@ -131,8 +131,8 @@ export default function Layout() {
             </div>
           </div>
 
-          {/* Navigation */}
-          <nav className="space-y-2">
+          {/* Navigation - Scrollable */}
+          <nav className="flex-1 overflow-y-auto px-3 pb-4 space-y-2">
             {menuItems.map((item) => {
               const Icon = item.icon;
               const hasChildren = item.children && item.children.length > 0;
@@ -210,8 +210,8 @@ export default function Layout() {
             })}
           </nav>
 
-          {/* Admin Info */}
-          <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 bg-white space-y-2">
+          {/* Admin Info - Fixed at bottom */}
+          <div className="flex-shrink-0 p-4 border-t border-gray-200 bg-white space-y-2">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center">
                 <span className="text-primary-700 font-medium">
