@@ -422,6 +422,7 @@ export interface PackagingType {
   images: string[];
   amount: number;
   giftType: 'money' | 'gift';
+  packagingProvider: 'hadawi' | 'brand';
   status: 'active' | 'inactive' | 'archived';
   createdAt: string;
   updatedAt: string;
@@ -435,6 +436,7 @@ export interface PackagingFormData {
   images: string[];
   amount: number;
   giftType: 'money' | 'gift';
+  packagingProvider: 'hadawi' | 'brand';
   status: 'active' | 'inactive' | 'archived';
 }
 
@@ -914,6 +916,7 @@ export interface Product {
   recipientTypes: string[];
   isActive: boolean;
   isFeatured: boolean;
+  isAdditionalGift: boolean;
   stock: number;
   sku?: string;
   tags: string[];
@@ -940,6 +943,7 @@ export interface ProductFormData {
   recipientTypes: string[];
   isActive: boolean;
   isFeatured: boolean;
+  isAdditionalGift: boolean;
   stock: number;
   sku?: string;
   tags: string[];
@@ -956,6 +960,7 @@ export interface ProductFilters {
   search?: string;
   isActive?: boolean;
   isFeatured?: boolean;
+  isAdditionalGift?: boolean;
 }
 
 export interface ProductsResponse {
