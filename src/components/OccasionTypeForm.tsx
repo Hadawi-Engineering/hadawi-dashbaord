@@ -26,8 +26,6 @@ export default function OccasionTypeForm({
         key: '',
         nameAr: '',
         nameEn: '',
-        descriptionAr: '',
-        descriptionEn: '',
         isActive: true,
     });
 
@@ -37,8 +35,6 @@ export default function OccasionTypeForm({
                 key: initialData.key || '',
                 nameAr: initialData.nameAr || '',
                 nameEn: initialData.nameEn || '',
-                descriptionAr: initialData.descriptionAr || '',
-                descriptionEn: initialData.descriptionEn || '',
                 isActive: initialData.isActive ?? true,
             });
         } else {
@@ -46,8 +42,6 @@ export default function OccasionTypeForm({
                 key: '',
                 nameAr: '',
                 nameEn: '',
-                descriptionAr: '',
-                descriptionEn: '',
                 isActive: true,
             });
         }
@@ -89,14 +83,6 @@ export default function OccasionTypeForm({
                             placeholder="e.g. Birthday"
                             required
                         />
-                        <Input
-                            label="Description (English)"
-                            value={formData.descriptionEn}
-                            onChange={(e) => setFormData({ ...formData, descriptionEn: e.target.value })}
-                            placeholder="Enter English description..."
-                            multiline
-                            rows={3}
-                        />
                     </div>
 
                     {/* Arabic Fields */}
@@ -108,15 +94,6 @@ export default function OccasionTypeForm({
                             onChange={(e) => setFormData({ ...formData, nameAr: e.target.value })}
                             placeholder="مثال: عيد ميلاد"
                             required
-                            dir="rtl"
-                        />
-                        <Input
-                            label="الوصف (بالعربي)"
-                            value={formData.descriptionAr}
-                            onChange={(e) => setFormData({ ...formData, descriptionAr: e.target.value })}
-                            placeholder="أدخل الوصف بالعربي..."
-                            multiline
-                            rows={3}
                             dir="rtl"
                         />
                     </div>
