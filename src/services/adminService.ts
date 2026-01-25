@@ -66,6 +66,11 @@ const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 class AdminService {
   private api: AxiosInstance;
+  private isRefreshing: boolean = false;
+  private failedQueue: Array<{
+    resolve: (value?: any) => void;
+    reject: (reason?: any) => void;
+  }> = [];
 
   constructor() {
     this.api = axios.create({
@@ -87,22 +92,67 @@ class AdminService {
       (error) => Promise.reject(error)
     );
 
-    // Handle token refresh
+    // Handle token refresh with queue
     this.api.interceptors.response.use(
       (response) => response,
       async (error: AxiosError) => {
-        if (error.response?.status === 401) {
+        const originalRequest = error.config as any;
+        
+        if (error.response?.status === 401 && !originalRequest._retry) {
+          if (this.isRefreshing) {
+            // Queue the request while refresh is in progress
+            return new Promise((resolve, reject) => {
+              this.failedQueue.push({ resolve, reject });
+            })
+              .then(() => {
+                const token = localStorage.getItem('admin_token');
+                if (token && originalRequest.headers) {
+                  originalRequest.headers.Authorization = `Bearer ${token}`;
+                }
+                return this.api.request(originalRequest);
+              })
+              .catch((err) => Promise.reject(err));
+          }
+
+          originalRequest._retry = true;
+          this.isRefreshing = true;
+
           try {
             await this.refreshToken();
-            return this.api.request(error.config!);
+            
+            // Process queued requests
+            this.processQueue(null);
+            
+            // Retry the original request with new token
+            const token = localStorage.getItem('admin_token');
+            if (token && originalRequest.headers) {
+              originalRequest.headers.Authorization = `Bearer ${token}`;
+            }
+            
+            return this.api.request(originalRequest);
           } catch (refreshError) {
+            this.processQueue(refreshError);
             this.logout();
             window.location.href = '/login';
+            return Promise.reject(refreshError);
+          } finally {
+            this.isRefreshing = false;
           }
         }
         return Promise.reject(error);
       }
     );
+  }
+
+  private processQueue(error: any) {
+    this.failedQueue.forEach((promise) => {
+      if (error) {
+        promise.reject(error);
+      } else {
+        promise.resolve();
+      }
+    });
+    this.failedQueue = [];
   }
 
   // ==================== AUTH ====================
