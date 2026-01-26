@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Save, Trash2 } from 'lucide-react';
+import { Save } from 'lucide-react';
 import Modal from './ui/Modal';
 import Button from './ui/Button';
 import Input from './ui/Input';
-import ImageUploader from './ui/ImageUploader';
+import ImageUpload from './ui/ImageUpload';
 import { useLanguage } from '../contexts/LanguageContext';
 import type { PackagingType, PackagingFormData } from '../types';
 
@@ -66,19 +66,6 @@ export default function PackagingForm({
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         onSubmit(formData);
-    };
-
-    const handleImageUpload = (url: string) => {
-        if (url) {
-            setFormData(prev => ({ ...prev, images: [...prev.images, url] }));
-        }
-    };
-
-    const removeImage = (index: number) => {
-        setFormData(prev => ({
-            ...prev,
-            images: prev.images.filter((_, i) => i !== index)
-        }));
     };
 
     return (
@@ -199,36 +186,16 @@ export default function PackagingForm({
                     </div>
                 </div>
 
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                        {t('packaging.images')}
-                    </label>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                        {formData.images.map((url, index) => (
-                            <div key={index} className="relative group aspect-square">
-                                <img
-                                    src={url}
-                                    alt={`Packaging ${index + 1}`}
-                                    className="w-full h-full object-cover rounded-lg border border-gray-200"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => removeImage(index)}
-                                    className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                                >
-                                    <Trash2 size={14} />
-                                </button>
-                            </div>
-                        ))}
-                        <div className="aspect-square">
-                            <ImageUploader
-                                label=""
-                                value=""
-                                onChange={handleImageUpload}
-                                className="w-full h-full"
-                            />
-                        </div>
-                    </div>
+                {/* Images */}
+                <div className="space-y-4">
+                    <h3 className="text-lg font-medium text-gray-900">{t('packaging.images')} *</h3>
+                    <ImageUpload
+                        images={formData.images}
+                        onChange={(newImages) => setFormData({ ...formData, images: newImages })}
+                        multiple={true}
+                        maxImages={5}
+                        folder="packaging"
+                    />
                 </div>
 
                 <div className="flex justify-end gap-3 pt-4 border-t">
