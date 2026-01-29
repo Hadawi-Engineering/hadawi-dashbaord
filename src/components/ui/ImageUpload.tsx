@@ -8,6 +8,15 @@ interface ImageUploadProps {
     multiple?: boolean;
     maxImages?: number;
     folder?: string;
+    uploadOptions?: {
+        folder?: string;
+        transformation?: {
+            width?: number;
+            height?: number;
+            crop?: string;
+            quality?: string;
+        };
+    };
 }
 
 export default function ImageUpload({
@@ -15,15 +24,19 @@ export default function ImageUpload({
     onChange,
     multiple = false,
     maxImages = 5,
-    folder = 'products'
+    folder = 'products',
+    uploadOptions
 }: ImageUploadProps) {
     const [uploading, setUploading] = useState(false);
     const [dragActive, setDragActive] = useState(false);
 
     const uploadToCloudinary = async (file: File): Promise<string> => {
         try {
+            // Use uploadOptions if provided, otherwise use folder prop
+            const requestOptions = uploadOptions || { folder };
+            
             // Get upload signature from backend
-            const signature = await adminService.getCloudinaryUploadSignature({ folder });
+            const signature = await adminService.getCloudinaryUploadSignature(requestOptions);
 
             // Create form data for Cloudinary
             const formData = new FormData();
@@ -32,6 +45,17 @@ export default function ImageUpload({
             formData.append('timestamp', signature.timestamp.toString());
             formData.append('signature', signature.signature);
             formData.append('folder', signature.folder);
+
+            // Add transformation if provided by backend
+            if (signature.transformation) {
+                const transformation = [
+                    `w_${signature.transformation.width}`,
+                    `h_${signature.transformation.height}`,
+                    `c_${signature.transformation.crop}`,
+                    `q_${signature.transformation.quality}`
+                ].join(',');
+                formData.append('transformation', transformation);
+            }
 
             // Upload to Cloudinary
             const response = await fetch(
