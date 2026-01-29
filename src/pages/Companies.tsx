@@ -8,7 +8,7 @@ import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
 import Modal from '../components/ui/Modal';
 import Input from '../components/ui/Input';
-import ImageUploader from '../components/ui/ImageUploader';
+import ImageUpload from '../components/ui/ImageUpload';
 import type { Company } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 
@@ -247,12 +247,18 @@ export default function Companies() {
                             type="url"
                         />
 
-                        <ImageUploader
-                            label={t('companies.logo')}
-                            value={formData.logoUrl}
-                            onChange={(url) => setFormData({ ...formData, logoUrl: url })}
-                            maxSize={5}
-                        />
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                {t('companies.logo')}
+                            </label>
+                            <ImageUpload
+                                images={formData.logoUrl ? [formData.logoUrl] : []}
+                                onChange={(images) => setFormData({ ...formData, logoUrl: images[0] || '' })}
+                                multiple={false}
+                                maxImages={1}
+                                folder="companies"
+                            />
+                        </div>
 
                         <div className="flex items-center gap-2">
                             <input

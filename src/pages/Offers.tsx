@@ -8,7 +8,7 @@ import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
 import Modal from '../components/ui/Modal';
 import Input from '../components/ui/Input';
-import ImageUploader from '../components/ui/ImageUploader';
+import ImageUpload from '../components/ui/ImageUpload';
 import type { Offer } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 
@@ -295,12 +295,18 @@ export default function Offers() {
                             placeholder="Details about the offer"
                         />
 
-                        <ImageUploader
-                            label={t('offers.image')}
-                            value={formData.imageUrl}
-                            onChange={(url) => setFormData({ ...formData, imageUrl: url })}
-                            maxSize={5}
-                        />
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                {t('offers.image')}
+                            </label>
+                            <ImageUpload
+                                images={formData.imageUrl ? [formData.imageUrl] : []}
+                                onChange={(images) => setFormData({ ...formData, imageUrl: images[0] || '' })}
+                                multiple={false}
+                                maxImages={1}
+                                folder="offers"
+                            />
+                        </div>
 
                         <Input
                             label={t('offers.promoCode')}

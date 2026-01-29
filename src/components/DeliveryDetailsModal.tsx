@@ -5,7 +5,7 @@ import adminService from '../services/adminService';
 import Card from './ui/Card';
 import Button from './ui/Button';
 import Badge from './ui/Badge';
-import MultiImageUploader from './ui/MultiImageUploader';
+import ImageUpload from './ui/ImageUpload';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useScrollLock } from '../hooks/useScrollLock';
 import type { DeliveryRecord, DeliveryRecordCreate, DeliveryPartner } from '../types';
@@ -370,12 +370,11 @@ export default function DeliveryDetailsModal({
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       {t('delivery.giftImages')}
                     </label>
-                    <MultiImageUploader
-                      value={giftImages}
+                    <ImageUpload
+                      images={giftImages}
                       onChange={handleGiftImagesUpload}
-                      maxFiles={10}
-                      maxSize={5}
-                      className="min-h-[200px]"
+                      multiple={true}
+                      maxImages={10}
                       uploadOptions={{
                         folder: 'hadawi-dashboard/gifts',
                         transformation: {
@@ -393,12 +392,11 @@ export default function DeliveryDetailsModal({
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       {t('delivery.receiptImages')}
                     </label>
-                    <MultiImageUploader
-                      value={receiptImages}
+                    <ImageUpload
+                      images={receiptImages}
                       onChange={handleReceiptImagesUpload}
-                      maxFiles={10}
-                      maxSize={5}
-                      className="min-h-[200px]"
+                      multiple={true}
+                      maxImages={10}
                       uploadOptions={{
                         folder: 'hadawi-dashboard/receipts',
                         transformation: {
