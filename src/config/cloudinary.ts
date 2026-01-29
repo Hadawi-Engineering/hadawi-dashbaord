@@ -4,11 +4,5 @@
 
 // Default upload options for signature requests
 export const defaultUploadOptions = {
-  folder: 'hadawi-dashboard',
-  transformation: {
-    width: 1200,
-    height: 800,
-    crop: 'fill',
-    quality: 'auto'
-  }
+  folder: 'hadawi-dashboard'
 };
