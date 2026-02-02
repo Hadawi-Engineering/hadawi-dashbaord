@@ -375,15 +375,7 @@ export default function DeliveryDetailsModal({
                       onChange={handleGiftImagesUpload}
                       multiple={true}
                       maxImages={10}
-                      uploadOptions={{
-                        folder: 'hadawi-dashboard/gifts',
-                        transformation: {
-                          width: 1200,
-                          height: 800,
-                          crop: 'fill',
-                          quality: 'auto'
-                        }
-                      }}
+                      folder="hadawi-dashboard/gifts"
                     />
                   </div>
 
@@ -397,15 +389,7 @@ export default function DeliveryDetailsModal({
                       onChange={handleReceiptImagesUpload}
                       multiple={true}
                       maxImages={10}
-                      uploadOptions={{
-                        folder: 'hadawi-dashboard/receipts',
-                        transformation: {
-                          width: 800,
-                          height: 600,
-                          crop: 'fill',
-                          quality: 'auto'
-                        }
-                      }}
+                      folder="hadawi-dashboard/receipts"
                     />
                   </div>
                 </div>

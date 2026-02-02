@@ -4,6 +4,7 @@ import type {
   LoginResponse,
   User,
   Occasion,
+  OccasionDetails,
   OccasionPaymentsResponse,
   Payment,
   PaymentStats,
@@ -232,8 +233,8 @@ class AdminService {
     return data;
   }
 
-  async getOccasion(occasionId: string): Promise<Occasion> {
-    const { data } = await this.api.get<Occasion>(`/occasions/${occasionId}`);
+  async getOccasion(occasionId: string): Promise<OccasionDetails> {
+    const { data } = await this.api.get<OccasionDetails>(`/occasions/${occasionId}`);
     return data;
   }
 

@@ -41,20 +41,103 @@ export interface Occasion {
   updatedAt: string;
 }
 
+export interface OccasionProduct {
+  id: string;
+  occasionId: string;
+  productId: string;
+  quantity: number;
+  priceAtTime: number;
+  product: {
+    id: string;
+    nameEn: string;
+    nameAr: string;
+    descriptionEn?: string;
+    descriptionAr?: string;
+    price: number;
+    images: string[];
+    isActive: boolean;
+    category?: {
+      id: string;
+      nameEn: string;
+      nameAr: string;
+    };
+    brand?: {
+      id: string;
+      nameEn: string;
+      nameAr: string;
+    };
+  };
+}
+
 export interface OccasionDetails {
   id: string;
   occasionName: string;
+  occasionDate: string;
   occasionType: string;
+  type: string;
   giftPrice: number;
+  giftName?: string;
+  giftLink?: string;
+  giftType?: string;
+  giftImages?: string[];
+  isActive: boolean;
   isCompleted: boolean;
+  isForMe: boolean;
+  isPrivate: boolean;
+  shareableLink?: string;
   completionDate: string | null;
   totalPaid: number;
   remainingAmount: number;
   isFullyPaid: boolean;
-  giftName?: string;
   giftDescription?: string;
-  giftImages?: string[];
-  giftLink?: string;
+  
+  // Product-based occasion fields
+  productBased?: boolean;
+  subtotal?: number;
+  deliveryTax?: number;
+  serviceTax?: number;
+  totalAmount?: number;
+  discount?: number;
+  discountCode?: string;
+  discountPercentage?: number;
+  
+  // Split payment info
+  splitPaymentEnabled?: boolean;
+  splitPaymentMode?: string;
+  numberOfPeople?: number;
+  amountPerPerson?: number;
+  
+  // Packaging and delivery
+  packagingId?: string;
+  deliveryAddress?: string;
+  receiverName?: string;
+  receiverPhone?: string;
+  
+  // User who created the occasion
+  person?: {
+    id: string;
+    name: string;
+    email: string;
+    phone: string;
+  };
+  
+  // Products in the occasion
+  occasionProducts?: OccasionProduct[];
+  
+  // Packaging info
+  packaging?: {
+    id: string;
+    nameEn: string;
+    nameAr: string;
+    amount: number;
+    images: string[];
+  };
+  
+  // Payment history
+  payments?: OccasionPayment[];
+  
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface OccasionPayment {
@@ -655,12 +738,6 @@ export interface CloudinaryUploadSignature {
 
 export interface CloudinaryUploadSignatureRequest {
   folder?: string;
-  transformation?: {
-    width?: number;
-    height?: number;
-    crop?: string;
-    quality?: string;
-  };
 }
 
 // Delivery Record Types
