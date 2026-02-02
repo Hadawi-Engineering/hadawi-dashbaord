@@ -59,8 +59,7 @@ export default function CloudinaryImageUploader({
     try {
       // Get upload signature from backend
       const signatureRequest: CloudinaryUploadSignatureRequest = {
-        folder: uploadOptions.folder || defaultUploadOptions.folder,
-        transformation: uploadOptions.transformation || defaultUploadOptions.transformation
+        folder: uploadOptions.folder || defaultUploadOptions.folder
       };
 
       const signatureData = await adminService.getCloudinaryUploadSignature(signatureRequest);
@@ -72,19 +71,6 @@ export default function CloudinaryImageUploader({
       formData.append('timestamp', signatureData.timestamp.toString());
       formData.append('api_key', signatureData.apiKey);
       formData.append('folder', signatureData.folder);
-
-      // Use the transformation exactly as provided by backend
-      if (signatureData.transformation) {
-        const transformation = [
-          `w_${signatureData.transformation.width}`,
-          `h_${signatureData.transformation.height}`,
-          `c_${signatureData.transformation.crop}`,
-          `q_${signatureData.transformation.quality}`,
-          `f_${signatureData.transformation.fetch_format || 'auto'}`
-        ].join(',');
-
-        formData.append('transformation', transformation);
-      }
 
       // Upload to Cloudinary
       const uploadUrl = `https://api.cloudinary.com/v1_1/${signatureData.cloudName}/image/upload`;

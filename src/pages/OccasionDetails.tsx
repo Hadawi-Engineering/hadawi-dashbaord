@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, Calendar, DollarSign, Users, TrendingUp, CheckCircle, Clock, XCircle, Truck, Gift, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Calendar, DollarSign, Users, TrendingUp, CheckCircle, Clock, XCircle, Truck, Gift, ExternalLink, Package, ShoppingBag, Receipt } from 'lucide-react';
 import adminService from '../services/adminService';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
@@ -15,9 +15,9 @@ export default function OccasionDetails() {
   const { t, isRTL } = useLanguage();
   const [deliveryModalOpen, setDeliveryModalOpen] = useState(false);
 
-  const { data: occasionData, isLoading, error } = useQuery({
-    queryKey: ['occasion-payments', occasionId],
-    queryFn: () => adminService.getOccasionPayments(occasionId!),
+  const { data: occasion, isLoading, error } = useQuery({
+    queryKey: ['occasion-details', occasionId],
+    queryFn: () => adminService.getOccasion(occasionId!),
     enabled: !!occasionId,
   });
 
@@ -30,7 +30,7 @@ export default function OccasionDetails() {
     );
   }
 
-  if (error || !occasionData) {
+  if (error || !occasion) {
     return (
       <div className="text-center py-12">
         <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('common.error')}</h2>
@@ -42,7 +42,13 @@ export default function OccasionDetails() {
     );
   }
 
-  const { occasion, payments, summary } = occasionData;
+  const payments = occasion.payments || [];
+  const isProductBased = occasion.productBased || false;
+  const totalPaid = payments
+    .filter(p => p.paymentStatus === 'completed')
+    .reduce((sum, p) => sum + p.paymentAmount, 0);
+  const remainingAmount = (occasion.totalAmount || occasion.giftPrice) - totalPaid;
+  const completionPercentage = ((totalPaid / (occasion.totalAmount || occasion.giftPrice)) * 100).toFixed(1);
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -163,7 +169,7 @@ export default function OccasionDetails() {
             </div>
             <div>
               <p className="text-sm text-gray-600">{t('occasions.details.targetAmount')}</p>
-              <p className="font-semibold text-gray-900">{occasion.giftPrice.toLocaleString()} SAR</p>
+              <p className="font-semibold text-gray-900">{(occasion.totalAmount || occasion.giftPrice).toLocaleString()} SAR</p>
             </div>
           </div>
         </Card>
@@ -175,7 +181,7 @@ export default function OccasionDetails() {
             </div>
             <div>
               <p className="text-sm text-gray-600">{t('occasions.details.totalPaid')}</p>
-              <p className="font-semibold text-gray-900">{occasion.totalPaid.toLocaleString()} SAR</p>
+              <p className="font-semibold text-gray-900">{totalPaid.toLocaleString()} SAR</p>
             </div>
           </div>
         </Card>
@@ -187,7 +193,7 @@ export default function OccasionDetails() {
             </div>
             <div>
               <p className="text-sm text-gray-600">{t('occasions.details.remainingAmount')}</p>
-              <p className="font-semibold text-gray-900">{occasion.remainingAmount.toLocaleString()} SAR</p>
+              <p className="font-semibold text-gray-900">{remainingAmount.toLocaleString()} SAR</p>
             </div>
           </div>
         </Card>
@@ -252,6 +258,211 @@ export default function OccasionDetails() {
         </Card>
       )}
 
+      {/* Products Section (Product-based occasions) */}
+      {isProductBased && occasion.occasionProducts && occasion.occasionProducts.length > 0 && (
+        <Card>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 bg-indigo-100 rounded-lg">
+              <ShoppingBag className="w-6 h-6 text-indigo-600" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900">Products</h3>
+          </div>
+
+          <div className="space-y-4">
+            {occasion.occasionProducts.map((item) => (
+              <div key={item.id} className="flex gap-4 p-4 bg-gray-50 rounded-lg">
+                {item.product.images && item.product.images.length > 0 && (
+                  <img
+                    src={item.product.images[0]}
+                    alt={item.product.nameEn}
+                    className="w-24 h-24 object-cover rounded-lg"
+                  />
+                )}
+                <div className="flex-1">
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <h4 className="font-semibold text-gray-900">{item.product.nameEn}</h4>
+                      {item.product.nameAr && (
+                        <p className="text-sm text-gray-600">{item.product.nameAr}</p>
+                      )}
+                    </div>
+                    <Badge color={item.product.isActive ? 'green' : 'gray'}>
+                      {item.product.isActive ? 'Active' : 'Inactive'}
+                    </Badge>
+                  </div>
+                  
+                  {item.product.descriptionEn && (
+                    <p className="text-sm text-gray-600 mb-2">{item.product.descriptionEn}</p>
+                  )}
+                  
+                  <div className="flex gap-4 text-sm">
+                    {item.product.category && (
+                      <span className="text-gray-600">
+                        <strong>Category:</strong> {item.product.category.nameEn}
+                      </span>
+                    )}
+                    {item.product.brand && (
+                      <span className="text-gray-600">
+                        <strong>Brand:</strong> {item.product.brand.nameEn}
+                      </span>
+                    )}
+                  </div>
+                  
+                  <div className="flex justify-between items-center mt-3 pt-3 border-t border-gray-200">
+                    <span className="text-gray-600">Quantity: <strong className="text-gray-900">{item.quantity}</strong></span>
+                    <div className="text-right">
+                      <p className="text-sm text-gray-600">Price at time</p>
+                      <p className="font-semibold text-gray-900">{item.priceAtTime.toLocaleString()} SAR</p>
+                      <p className="text-sm text-primary-600 font-medium">
+                        Total: {(item.priceAtTime * item.quantity).toLocaleString()} SAR
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+
+      {/* Packaging Section */}
+      {occasion.packaging && (
+        <Card>
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 bg-purple-100 rounded-lg">
+              <Package className="w-6 h-6 text-purple-600" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900">Packaging</h3>
+          </div>
+
+          <div className="flex gap-4 p-4 bg-gray-50 rounded-lg">
+            {occasion.packaging.images && occasion.packaging.images.length > 0 && (
+              <img
+                src={occasion.packaging.images[0]}
+                alt={occasion.packaging.nameEn}
+                className="w-24 h-24 object-cover rounded-lg"
+              />
+            )}
+            <div className="flex-1">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h4 className="font-semibold text-gray-900">{occasion.packaging.nameEn}</h4>
+                  {occasion.packaging.nameAr && (
+                    <p className="text-sm text-gray-600">{occasion.packaging.nameAr}</p>
+                  )}
+                </div>
+                <p className="font-semibold text-gray-900">{occasion.packaging.amount.toLocaleString()} SAR</p>
+              </div>
+            </div>
+          </div>
+        </Card>
+      )}
+
+      {/* Price Breakdown (Product-based occasions) */}
+      {isProductBased && (
+        <Card>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 bg-green-100 rounded-lg">
+              <Receipt className="w-6 h-6 text-green-600" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900">Price Breakdown</h3>
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex justify-between py-2">
+              <span className="text-gray-600">Subtotal</span>
+              <span className="font-medium text-gray-900">{(occasion.subtotal || 0).toLocaleString()} SAR</span>
+            </div>
+            
+            {occasion.deliveryTax !== undefined && occasion.deliveryTax > 0 && (
+              <div className="flex justify-between py-2">
+                <span className="text-gray-600">Delivery Tax</span>
+                <span className="font-medium text-gray-900">{occasion.deliveryTax.toLocaleString()} SAR</span>
+              </div>
+            )}
+            
+            {occasion.serviceTax !== undefined && occasion.serviceTax > 0 && (
+              <div className="flex justify-between py-2">
+                <span className="text-gray-600">Service Tax</span>
+                <span className="font-medium text-gray-900">{occasion.serviceTax.toLocaleString()} SAR</span>
+              </div>
+            )}
+            
+            {occasion.discount !== undefined && occasion.discount > 0 && (
+              <div className="flex justify-between py-2 text-green-600">
+                <span>
+                  Discount
+                  {occasion.discountCode && ` (${occasion.discountCode})`}
+                  {occasion.discountPercentage && ` - ${occasion.discountPercentage}%`}
+                </span>
+                <span className="font-medium">-{occasion.discount.toLocaleString()} SAR</span>
+              </div>
+            )}
+            
+            <div className="flex justify-between py-3 border-t-2 border-gray-200">
+              <span className="text-lg font-semibold text-gray-900">Total Amount</span>
+              <span className="text-lg font-bold text-primary-600">{(occasion.totalAmount || 0).toLocaleString()} SAR</span>
+            </div>
+
+            {/* Split Payment Info */}
+            {occasion.splitPaymentEnabled && (
+              <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+                <h4 className="font-semibold text-gray-900 mb-2">Split Payment</h4>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Mode:</span>
+                    <span className="font-medium text-gray-900">{occasion.splitPaymentMode}</span>
+                  </div>
+                  {occasion.numberOfPeople && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Number of People:</span>
+                      <span className="font-medium text-gray-900">{occasion.numberOfPeople}</span>
+                    </div>
+                  )}
+                  {occasion.amountPerPerson && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Amount per Person:</span>
+                      <span className="font-medium text-primary-600">{occasion.amountPerPerson.toLocaleString()} SAR</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </Card>
+      )}
+
+      {/* Delivery Information */}
+      {occasion.deliveryAddress && (
+        <Card>
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 bg-orange-100 rounded-lg">
+              <Truck className="w-6 h-6 text-orange-600" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900">Delivery Information</h3>
+          </div>
+
+          <div className="space-y-3">
+            {occasion.receiverName && (
+              <div>
+                <p className="text-sm text-gray-600">Receiver Name</p>
+                <p className="font-medium text-gray-900">{occasion.receiverName}</p>
+              </div>
+            )}
+            {occasion.receiverPhone && (
+              <div>
+                <p className="text-sm text-gray-600">Receiver Phone</p>
+                <p className="font-medium text-gray-900">{occasion.receiverPhone}</p>
+              </div>
+            )}
+            <div>
+              <p className="text-sm text-gray-600">Delivery Address</p>
+              <p className="font-medium text-gray-900">{occasion.deliveryAddress}</p>
+            </div>
+          </div>
+        </Card>
+      )}
+
       {/* Progress and Status */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
@@ -260,12 +471,12 @@ export default function OccasionDetails() {
             <div>
               <div className="flex justify-between text-sm text-gray-600 mb-2">
                 <span>{t('occasions.details.completion')}</span>
-                <span>{summary.completionPercentage}</span>
+                <span>{completionPercentage}%</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div
                   className="bg-primary-600 h-2 rounded-full transition-all duration-300"
-                  style={{ width: summary.completionPercentage }}
+                  style={{ width: `${completionPercentage}%` }}
                 />
               </div>
             </div>
@@ -287,19 +498,25 @@ export default function OccasionDetails() {
           <div className="space-y-3">
             <div className="flex justify-between">
               <span className="text-gray-600">{t('occasions.details.totalPayments')}</span>
-              <span className="font-medium">{summary.totalPayments}</span>
+              <span className="font-medium">{payments.length}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">{t('occasions.details.completedPayments')}</span>
-              <span className="font-medium text-green-600">{summary.completedPayments}</span>
+              <span className="font-medium text-green-600">
+                {payments.filter(p => p.paymentStatus === 'completed').length}
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">{t('occasions.details.pendingPayments')}</span>
-              <span className="font-medium text-yellow-600">{summary.pendingPayments}</span>
+              <span className="font-medium text-yellow-600">
+                {payments.filter(p => p.paymentStatus === 'pending').length}
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">{t('occasions.details.failedPayments')}</span>
-              <span className="font-medium text-red-600">{summary.failedPayments}</span>
+              <span className="font-medium text-red-600">
+                {payments.filter(p => p.paymentStatus === 'failed').length}
+              </span>
             </div>
           </div>
         </Card>
