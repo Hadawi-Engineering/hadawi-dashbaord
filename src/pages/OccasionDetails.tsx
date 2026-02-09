@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, Calendar, DollarSign, Users, TrendingUp, CheckCircle, Clock, XCircle, Truck, Gift, ExternalLink, Package, ShoppingBag, Receipt } from 'lucide-react';
+import { ArrowLeft, Calendar, DollarSign, Users, TrendingUp, CheckCircle, Clock, XCircle, Truck, Gift, ExternalLink, Package, ShoppingBag, Receipt, User, Mail, Phone } from 'lucide-react';
 import adminService from '../services/adminService';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
@@ -90,8 +90,8 @@ export default function OccasionDetails() {
       label: t('payments.amount'),
       render: (payment: any) => (
         <div className="text-right">
-          <div className="font-medium">{payment.paymentAmount.toLocaleString()} SAR</div>
-          <div className="text-sm text-gray-500">{t('payments.remaining')}: {payment.remainingPrice.toLocaleString()} SAR</div>
+          <div className="font-medium">{(payment.paymentAmount || 0).toLocaleString()} SAR</div>
+          <div className="text-sm text-gray-500">{t('payments.remaining')}: {(payment.remainingPrice || 0).toLocaleString()} SAR</div>
         </div>
       ),
     },
@@ -169,7 +169,7 @@ export default function OccasionDetails() {
             </div>
             <div>
               <p className="text-sm text-gray-600">{t('occasions.details.targetAmount')}</p>
-              <p className="font-semibold text-gray-900">{(occasion.totalAmount || occasion.giftPrice).toLocaleString()} SAR</p>
+              <p className="font-semibold text-gray-900">{(occasion.totalAmount || occasion.giftPrice || 0).toLocaleString()} SAR</p>
             </div>
           </div>
         </Card>
@@ -309,12 +309,12 @@ export default function OccasionDetails() {
                   </div>
                   
                   <div className="flex justify-between items-center mt-3 pt-3 border-t border-gray-200">
-                    <span className="text-gray-600">Quantity: <strong className="text-gray-900">{item.quantity}</strong></span>
+                    <span className="text-gray-600">Quantity: <strong className="text-gray-900">{item.quantity || 0}</strong></span>
                     <div className="text-right">
                       <p className="text-sm text-gray-600">Price at time</p>
-                      <p className="font-semibold text-gray-900">{item.priceAtTime.toLocaleString()} SAR</p>
+                      <p className="font-semibold text-gray-900">{(item.priceAtTime || 0).toLocaleString()} SAR</p>
                       <p className="text-sm text-primary-600 font-medium">
-                        Total: {(item.priceAtTime * item.quantity).toLocaleString()} SAR
+                        Total: {((item.priceAtTime || 0) * (item.quantity || 0)).toLocaleString()} SAR
                       </p>
                     </div>
                   </div>
@@ -351,7 +351,7 @@ export default function OccasionDetails() {
                     <p className="text-sm text-gray-600">{occasion.packaging.nameAr}</p>
                   )}
                 </div>
-                <p className="font-semibold text-gray-900">{occasion.packaging.amount.toLocaleString()} SAR</p>
+                <p className="font-semibold text-gray-900">{(occasion.packaging.amount || 0).toLocaleString()} SAR</p>
               </div>
             </div>
           </div>
@@ -377,14 +377,14 @@ export default function OccasionDetails() {
             {occasion.deliveryTax !== undefined && occasion.deliveryTax > 0 && (
               <div className="flex justify-between py-2">
                 <span className="text-gray-600">Delivery Tax</span>
-                <span className="font-medium text-gray-900">{occasion.deliveryTax.toLocaleString()} SAR</span>
+                <span className="font-medium text-gray-900">{(occasion.deliveryTax || 0).toLocaleString()} SAR</span>
               </div>
             )}
             
             {occasion.serviceTax !== undefined && occasion.serviceTax > 0 && (
               <div className="flex justify-between py-2">
                 <span className="text-gray-600">Service Tax</span>
-                <span className="font-medium text-gray-900">{occasion.serviceTax.toLocaleString()} SAR</span>
+                <span className="font-medium text-gray-900">{(occasion.serviceTax || 0).toLocaleString()} SAR</span>
               </div>
             )}
             
@@ -395,7 +395,7 @@ export default function OccasionDetails() {
                   {occasion.discountCode && ` (${occasion.discountCode})`}
                   {occasion.discountPercentage && ` - ${occasion.discountPercentage}%`}
                 </span>
-                <span className="font-medium">-{occasion.discount.toLocaleString()} SAR</span>
+                <span className="font-medium">-{(occasion.discount || 0).toLocaleString()} SAR</span>
               </div>
             )}
             
@@ -422,7 +422,7 @@ export default function OccasionDetails() {
                   {occasion.amountPerPerson && (
                     <div className="flex justify-between">
                       <span className="text-gray-600">Amount per Person:</span>
-                      <span className="font-medium text-primary-600">{occasion.amountPerPerson.toLocaleString()} SAR</span>
+                      <span className="font-medium text-primary-600">{(occasion.amountPerPerson || 0).toLocaleString()} SAR</span>
                     </div>
                   )}
                 </div>
@@ -432,36 +432,72 @@ export default function OccasionDetails() {
         </Card>
       )}
 
-      {/* Delivery Information */}
-      {occasion.deliveryAddress && (
-        <Card>
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 bg-orange-100 rounded-lg">
-              <Truck className="w-6 h-6 text-orange-600" />
+      {/* Person Details & Delivery Information */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Person Details */}
+        {occasion.person && (
+          <Card>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 bg-blue-100 rounded-lg">
+                <User className="w-6 h-6 text-blue-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">Created By</h3>
             </div>
-            <h3 className="text-lg font-semibold text-gray-900">Delivery Information</h3>
-          </div>
 
-          <div className="space-y-3">
-            {occasion.receiverName && (
+            <div className="space-y-3">
               <div>
-                <p className="text-sm text-gray-600">Receiver Name</p>
-                <p className="font-medium text-gray-900">{occasion.receiverName}</p>
+                <p className="text-sm text-gray-600">Name</p>
+                <p className="font-medium text-gray-900">{occasion.person.name}</p>
               </div>
-            )}
-            {occasion.receiverPhone && (
-              <div>
-                <p className="text-sm text-gray-600">Receiver Phone</p>
-                <p className="font-medium text-gray-900">{occasion.receiverPhone}</p>
+              <div className="flex items-center gap-2">
+                <Mail className="w-4 h-4 text-gray-400" />
+                <div className="flex-1">
+                  <p className="text-sm text-gray-600">Email</p>
+                  <p className="font-medium text-gray-900">{occasion.person.email}</p>
+                </div>
               </div>
-            )}
-            <div>
-              <p className="text-sm text-gray-600">Delivery Address</p>
-              <p className="font-medium text-gray-900">{occasion.deliveryAddress}</p>
+              <div className="flex items-center gap-2">
+                <Phone className="w-4 h-4 text-gray-400" />
+                <div className="flex-1">
+                  <p className="text-sm text-gray-600">Phone</p>
+                  <p className="font-medium text-gray-900">{occasion.person.phone}</p>
+                </div>
+              </div>
             </div>
-          </div>
-        </Card>
-      )}
+          </Card>
+        )}
+
+        {/* Delivery Information */}
+        {occasion.deliveryAddress && (
+          <Card>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 bg-orange-100 rounded-lg">
+                <Truck className="w-6 h-6 text-orange-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">Delivery Information</h3>
+            </div>
+
+            <div className="space-y-3">
+              {occasion.receiverName && (
+                <div>
+                  <p className="text-sm text-gray-600">Receiver Name</p>
+                  <p className="font-medium text-gray-900">{occasion.receiverName}</p>
+                </div>
+              )}
+              {occasion.receiverPhone && (
+                <div>
+                  <p className="text-sm text-gray-600">Receiver Phone</p>
+                  <p className="font-medium text-gray-900">{occasion.receiverPhone}</p>
+                </div>
+              )}
+              <div>
+                <p className="text-sm text-gray-600">Delivery Address</p>
+                <p className="font-medium text-gray-900">{occasion.deliveryAddress}</p>
+              </div>
+            </div>
+          </Card>
+        )}
+      </div>
 
       {/* Progress and Status */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
