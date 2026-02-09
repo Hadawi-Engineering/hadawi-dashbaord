@@ -90,8 +90,8 @@ export default function OccasionDetails() {
       label: t('payments.amount'),
       render: (payment: any) => (
         <div className="text-right">
-          <div className="font-medium">{payment.paymentAmount.toLocaleString()} SAR</div>
-          <div className="text-sm text-gray-500">{t('payments.remaining')}: {payment.remainingPrice.toLocaleString()} SAR</div>
+          <div className="font-medium">{(payment.paymentAmount || 0).toLocaleString()} SAR</div>
+          <div className="text-sm text-gray-500">{t('payments.remaining')}: {(payment.remainingPrice || 0).toLocaleString()} SAR</div>
         </div>
       ),
     },
@@ -169,7 +169,7 @@ export default function OccasionDetails() {
             </div>
             <div>
               <p className="text-sm text-gray-600">{t('occasions.details.targetAmount')}</p>
-              <p className="font-semibold text-gray-900">{(occasion.totalAmount || occasion.giftPrice).toLocaleString()} SAR</p>
+              <p className="font-semibold text-gray-900">{(occasion.totalAmount || occasion.giftPrice || 0).toLocaleString()} SAR</p>
             </div>
           </div>
         </Card>
@@ -309,12 +309,12 @@ export default function OccasionDetails() {
                   </div>
                   
                   <div className="flex justify-between items-center mt-3 pt-3 border-t border-gray-200">
-                    <span className="text-gray-600">Quantity: <strong className="text-gray-900">{item.quantity}</strong></span>
+                    <span className="text-gray-600">Quantity: <strong className="text-gray-900">{item.quantity || 0}</strong></span>
                     <div className="text-right">
                       <p className="text-sm text-gray-600">Price at time</p>
-                      <p className="font-semibold text-gray-900">{item.priceAtTime.toLocaleString()} SAR</p>
+                      <p className="font-semibold text-gray-900">{(item.priceAtTime || 0).toLocaleString()} SAR</p>
                       <p className="text-sm text-primary-600 font-medium">
-                        Total: {(item.priceAtTime * item.quantity).toLocaleString()} SAR
+                        Total: {((item.priceAtTime || 0) * (item.quantity || 0)).toLocaleString()} SAR
                       </p>
                     </div>
                   </div>
@@ -351,7 +351,7 @@ export default function OccasionDetails() {
                     <p className="text-sm text-gray-600">{occasion.packaging.nameAr}</p>
                   )}
                 </div>
-                <p className="font-semibold text-gray-900">{occasion.packaging.amount.toLocaleString()} SAR</p>
+                <p className="font-semibold text-gray-900">{(occasion.packaging.amount || 0).toLocaleString()} SAR</p>
               </div>
             </div>
           </div>
@@ -377,14 +377,14 @@ export default function OccasionDetails() {
             {occasion.deliveryTax !== undefined && occasion.deliveryTax > 0 && (
               <div className="flex justify-between py-2">
                 <span className="text-gray-600">Delivery Tax</span>
-                <span className="font-medium text-gray-900">{occasion.deliveryTax.toLocaleString()} SAR</span>
+                <span className="font-medium text-gray-900">{(occasion.deliveryTax || 0).toLocaleString()} SAR</span>
               </div>
             )}
             
             {occasion.serviceTax !== undefined && occasion.serviceTax > 0 && (
               <div className="flex justify-between py-2">
                 <span className="text-gray-600">Service Tax</span>
-                <span className="font-medium text-gray-900">{occasion.serviceTax.toLocaleString()} SAR</span>
+                <span className="font-medium text-gray-900">{(occasion.serviceTax || 0).toLocaleString()} SAR</span>
               </div>
             )}
             
@@ -395,7 +395,7 @@ export default function OccasionDetails() {
                   {occasion.discountCode && ` (${occasion.discountCode})`}
                   {occasion.discountPercentage && ` - ${occasion.discountPercentage}%`}
                 </span>
-                <span className="font-medium">-{occasion.discount.toLocaleString()} SAR</span>
+                <span className="font-medium">-{(occasion.discount || 0).toLocaleString()} SAR</span>
               </div>
             )}
             
@@ -422,7 +422,7 @@ export default function OccasionDetails() {
                   {occasion.amountPerPerson && (
                     <div className="flex justify-between">
                       <span className="text-gray-600">Amount per Person:</span>
-                      <span className="font-medium text-primary-600">{occasion.amountPerPerson.toLocaleString()} SAR</span>
+                      <span className="font-medium text-primary-600">{(occasion.amountPerPerson || 0).toLocaleString()} SAR</span>
                     </div>
                   )}
                 </div>
