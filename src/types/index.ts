@@ -595,6 +595,14 @@ export interface NotificationSend {
   scheduledAt?: string;
 }
 
+export interface NotificationSendToTopic {
+  topic: string;
+  title: string;
+  body: string;
+  imageUrl?: string;
+  data?: Record<string, any>;
+}
+
 export interface NotificationTriggerRequest {
   userIds: string[];
   variables: Record<string, string>;
