@@ -40,6 +40,7 @@ import type {
   NotificationTemplateCreate,
   NotificationTemplateUpdate,
   NotificationSend,
+  NotificationSendToTopic,
   NotificationTriggerRequest,
   NotificationStats,
   NotificationHistory,
@@ -754,6 +755,10 @@ class AdminService {
 
   async sendCustomNotification(notificationData: NotificationSend): Promise<void> {
     await this.api.post('/notifications/dashboard/send', notificationData);
+  }
+
+  async sendNotificationToTopic(payload: NotificationSendToTopic): Promise<void> {
+    await this.api.post('/notifications/send-to-topic', payload);
   }
 
   async triggerEventNotification(trigger: NotificationTrigger, requestData: NotificationTriggerRequest): Promise<void> {

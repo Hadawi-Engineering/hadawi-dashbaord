@@ -46,6 +46,7 @@ export default function NotificationsPage() {
 
   // Send Notification States
   const [showSendModal, setShowSendModal] = useState(false);
+  const [sendToAllUsers, setSendToAllUsers] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [sendForm, setSendForm] = useState<NotificationSend>({
     userIds: [],
@@ -136,9 +137,22 @@ export default function NotificationsPage() {
   };
 
   const handleSendNotification = async () => {
+    if (!sendToAllUsers && selectedUsers.length === 0) {
+      return;
+    }
     try {
-      const formData = { ...sendForm, userIds: selectedUsers };
-      await adminService.sendCustomNotification(formData);
+      if (sendToAllUsers) {
+        await adminService.sendNotificationToTopic({
+          topic: 'all_users',
+          title: sendForm.title,
+          body: sendForm.body,
+          imageUrl: sendForm.imageUrl,
+          data: sendForm.data
+        });
+      } else {
+        const formData = { ...sendForm, userIds: selectedUsers };
+        await adminService.sendCustomNotification(formData);
+      }
       setShowSendModal(false);
       resetSendForm();
       loadData();
@@ -146,6 +160,8 @@ export default function NotificationsPage() {
       console.error('Error sending notification:', error);
     }
   };
+
+  const canSendNotification = sendToAllUsers || selectedUsers.length > 0;
 
   const handleTriggerNotification = async () => {
     try {
@@ -204,6 +220,7 @@ export default function NotificationsPage() {
       data: {},
       scheduledAt: ''
     });
+    setSendToAllUsers(false);
     setSelectedUsers([]);
   };
 
@@ -594,34 +611,62 @@ export default function NotificationsPage() {
       >
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-2">{t('notifications.usersList')}</label>
-            <div className="border rounded-lg p-2 max-h-40 overflow-y-auto">
-              {users.map((user) => (
-                <label key={user.id} className="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded">
-                  <input
-                    type="checkbox"
-                    checked={selectedUsers.includes(user.id)}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setSelectedUsers([...selectedUsers, user.id]);
-                      } else {
-                        setSelectedUsers(selectedUsers.filter(id => id !== user.id));
-                      }
-                    }}
-                    className="rounded"
-                  />
-                  <span className="text-sm">
-                    {user.name} ({user.email})
-                  </span>
-                </label>
-              ))}
+            <label className="block text-sm font-medium mb-2">{t('notifications.recipient')}</label>
+            <div className="flex gap-4">
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  name="recipient"
+                  checked={!sendToAllUsers}
+                  onChange={() => setSendToAllUsers(false)}
+                  className="mr-2"
+                />
+                {t('notifications.sendToSpecificUsers')}
+              </label>
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  name="recipient"
+                  checked={sendToAllUsers}
+                  onChange={() => setSendToAllUsers(true)}
+                  className="mr-2"
+                />
+                {t('notifications.sendToAllUsers')}
+              </label>
             </div>
-            {selectedUsers.length > 0 && (
-              <p className="text-sm text-gray-600 mt-2">
-                {t('notifications.selectedUsersList')}: {selectedUsers.length}
-              </p>
-            )}
           </div>
+
+          {!sendToAllUsers && (
+            <div>
+              <label className="block text-sm font-medium mb-2">{t('notifications.usersList')}</label>
+              <div className="border rounded-lg p-2 max-h-40 overflow-y-auto">
+                {users.map((user) => (
+                  <label key={user.id} className="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded">
+                    <input
+                      type="checkbox"
+                      checked={selectedUsers.includes(user.id)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedUsers([...selectedUsers, user.id]);
+                        } else {
+                          setSelectedUsers(selectedUsers.filter(id => id !== user.id));
+                        }
+                      }}
+                      className="rounded"
+                    />
+                    <span className="text-sm">
+                      {user.name} ({user.email})
+                    </span>
+                  </label>
+                ))}
+              </div>
+              {selectedUsers.length > 0 && (
+                <p className="text-sm text-gray-600 mt-2">
+                  {t('notifications.selectedUsersList')}: {selectedUsers.length}
+                </p>
+              )}
+            </div>
+          )}
 
           <Input
             label={t('notifications.title')}
@@ -665,7 +710,7 @@ export default function NotificationsPage() {
             >
               {t('notifications.cancel')}
             </Button>
-            <Button onClick={handleSendNotification}>
+            <Button onClick={handleSendNotification} disabled={!canSendNotification}>
               {t('notifications.send')}
             </Button>
           </div>
