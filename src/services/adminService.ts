@@ -782,8 +782,8 @@ class AdminService {
   }
 
   async getNotificationHistory(params: PaginationParams = {}): Promise<NotificationHistory[]> {
-    const { data } = await this.api.get<NotificationHistory[]>('/notifications/dashboard/history', { params });
-    return data;
+    const { data } = await this.api.get<NotificationHistory[] | { data: NotificationHistory[] }>('/notifications/dashboard/history', { params });
+    return Array.isArray(data) ? data : (data.data || []);
   }
 
   // ==================== COMPANIES ====================

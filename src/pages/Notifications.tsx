@@ -82,7 +82,7 @@ export default function NotificationsPage() {
 
       setTemplates(templatesData);
       setStats(statsData);
-      setHistory(historyData);
+      setHistory(Array.isArray(historyData) ? historyData : []);
       setUsers(usersData);
     } catch (error) {
       console.error('Error loading notification data:', error);
