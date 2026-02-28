@@ -48,6 +48,7 @@ export default function NotificationsPage() {
   const [showSendModal, setShowSendModal] = useState(false);
   const [sendToAllUsers, setSendToAllUsers] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const [sendingNotification, setSendingNotification] = useState(false);
   const [sendForm, setSendForm] = useState<NotificationSend>({
     userIds: [],
     title: '',
@@ -140,6 +141,7 @@ export default function NotificationsPage() {
     if (!sendToAllUsers && selectedUsers.length === 0) {
       return;
     }
+    setSendingNotification(true);
     try {
       if (sendToAllUsers) {
         await adminService.sendNotificationToAll({
@@ -161,6 +163,8 @@ export default function NotificationsPage() {
       loadData();
     } catch (error) {
       console.error('Error sending notification:', error);
+    } finally {
+      setSendingNotification(false);
     }
   };
 
@@ -696,13 +700,6 @@ export default function NotificationsPage() {
             placeholder={t('notifications.enterImageUrl')}
           />
 
-          <Input
-            label={t('notifications.scheduleFor')}
-            type="datetime-local"
-            value={sendForm.scheduledAt}
-            onChange={(e) => setSendForm({ ...sendForm, scheduledAt: e.target.value })}
-          />
-
           <div className="flex justify-end gap-2">
             <Button
               variant="outline"
@@ -710,10 +707,15 @@ export default function NotificationsPage() {
                 setShowSendModal(false);
                 resetSendForm();
               }}
+              disabled={sendingNotification}
             >
               {t('notifications.cancel')}
             </Button>
-            <Button onClick={handleSendNotification} disabled={!canSendNotification}>
+            <Button 
+              onClick={handleSendNotification} 
+              disabled={!canSendNotification || sendingNotification}
+              loading={sendingNotification}
+            >
               {t('notifications.send')}
             </Button>
           </div>
