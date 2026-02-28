@@ -761,6 +761,10 @@ class AdminService {
     await this.api.post('/notifications/send-to-topic', payload);
   }
 
+  async sendNotification(payload: { userIds: string[]; title: string; body: string; imageUrl?: string; data?: Record<string, any> }): Promise<void> {
+    await this.api.post('/notifications/send', payload);
+  }
+
   async triggerEventNotification(trigger: NotificationTrigger, requestData: NotificationTriggerRequest): Promise<void> {
     await this.api.post(`/notifications/dashboard/trigger/${trigger}`, requestData);
   }
