@@ -141,18 +141,14 @@ export default function NotificationsPage() {
       return;
     }
     try {
-      if (sendToAllUsers) {
-        await adminService.sendNotificationToTopic({
-          topic: 'all_users',
-          title: sendForm.title,
-          body: sendForm.body,
-          imageUrl: sendForm.imageUrl,
-          data: sendForm.data
-        });
-      } else {
-        const formData = { ...sendForm, userIds: selectedUsers };
-        await adminService.sendCustomNotification(formData);
-      }
+      const userIds = sendToAllUsers ? ['all'] : selectedUsers;
+      await adminService.sendNotification({
+        userIds,
+        title: sendForm.title,
+        body: sendForm.body,
+        imageUrl: sendForm.imageUrl,
+        data: sendForm.data
+      });
       setShowSendModal(false);
       resetSendForm();
       loadData();
