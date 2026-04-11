@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, Calendar, DollarSign, Users, TrendingUp, CheckCircle, Clock, XCircle, Truck, Gift, ExternalLink, Package, ShoppingBag, Receipt, User, Mail, Phone } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { ArrowLeft, Calendar, DollarSign, Users, TrendingUp, CheckCircle, Clock, XCircle, Truck, Gift, ExternalLink, Package, ShoppingBag, Receipt, User, Mail, Phone, Edit2, Save, X } from 'lucide-react';
 import adminService from '../services/adminService';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
@@ -13,7 +13,46 @@ export default function OccasionDetails() {
   const { occasionId } = useParams<{ occasionId: string }>();
   const navigate = useNavigate();
   const { t, isRTL } = useLanguage();
+  const queryClient = useQueryClient();
   const [deliveryModalOpen, setDeliveryModalOpen] = useState(false);
+
+  // Split payment edit state
+  const [splitEditMode, setSplitEditMode] = useState(false);
+  const [splitForm, setSplitForm] = useState({
+    numberOfPeople: '',
+    amountPerPerson: '',
+    splitPaymentEnabled: false,
+    splitPaymentMode: 'equal' as 'equal' | 'custom',
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: (data: Parameters<typeof adminService.updateOccasion>[1]) =>
+      adminService.updateOccasion(occasionId!, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['occasion-details', occasionId] });
+      setSplitEditMode(false);
+    },
+  });
+
+  const handleSplitEdit = () => {
+    if (!occasion) return;
+    setSplitForm({
+      numberOfPeople: occasion.numberOfPeople != null ? String(occasion.numberOfPeople) : '',
+      amountPerPerson: occasion.amountPerPerson != null ? String(occasion.amountPerPerson) : '',
+      splitPaymentEnabled: occasion.splitPaymentEnabled ?? false,
+      splitPaymentMode: (occasion.splitPaymentMode as 'equal' | 'custom') ?? 'equal',
+    });
+    setSplitEditMode(true);
+  };
+
+  const handleSplitSave = () => {
+    updateMutation.mutate({
+      numberOfPeople: splitForm.numberOfPeople !== '' ? Number(splitForm.numberOfPeople) : undefined,
+      amountPerPerson: splitForm.amountPerPerson !== '' ? Number(splitForm.amountPerPerson) : undefined,
+      splitPaymentEnabled: splitForm.splitPaymentEnabled,
+      splitPaymentMode: splitForm.splitPaymentMode,
+    });
+  };
 
   const { data: occasion, isLoading, error } = useQuery({
     queryKey: ['occasion-details', occasionId],
@@ -431,6 +470,129 @@ export default function OccasionDetails() {
           </div>
         </Card>
       )}
+
+      {/* Participants & Split Payment Edit Card */}
+      <Card>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-blue-100 rounded-lg">
+              <Users className="w-6 h-6 text-blue-600" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900">Participants &amp; Split Payment</h3>
+          </div>
+          {!splitEditMode ? (
+            <Button size="sm" variant="secondary" onClick={handleSplitEdit} className="flex items-center gap-2">
+              <Edit2 size={14} /> Edit
+            </Button>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                variant="primary"
+                onClick={handleSplitSave}
+                disabled={updateMutation.isPending}
+                className="flex items-center gap-2"
+              >
+                <Save size={14} />
+                {updateMutation.isPending ? 'Saving…' : 'Save'}
+              </Button>
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => setSplitEditMode(false)}
+                className="flex items-center gap-2"
+              >
+                <X size={14} /> Cancel
+              </Button>
+            </div>
+          )}
+        </div>
+
+        {!splitEditMode ? (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div>
+              <p className="text-sm text-gray-500 mb-1">Split Payment</p>
+              <Badge color={occasion.splitPaymentEnabled ? 'green' : 'gray'}>
+                {occasion.splitPaymentEnabled ? 'Enabled' : 'Disabled'}
+              </Badge>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500 mb-1">Mode</p>
+              <p className="font-medium text-gray-900 capitalize">{occasion.splitPaymentMode || '—'}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500 mb-1">Number of Participants</p>
+              <p className="font-medium text-gray-900">{occasion.numberOfPeople ?? '—'}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500 mb-1">Amount per Person</p>
+              <p className="font-medium text-gray-900">
+                {occasion.amountPerPerson != null ? `${occasion.amountPerPerson.toLocaleString()} SAR` : '—'}
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Split Payment Enabled */}
+            <div className="flex items-center gap-3">
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="sr-only peer"
+                  checked={splitForm.splitPaymentEnabled}
+                  onChange={(e) => setSplitForm({ ...splitForm, splitPaymentEnabled: e.target.checked })}
+                />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+              </label>
+              <span className="text-sm font-medium text-gray-700">Split Payment Enabled</span>
+            </div>
+
+            {/* Split Payment Mode */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Split Payment Mode</label>
+              <select
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                value={splitForm.splitPaymentMode}
+                onChange={(e) => setSplitForm({ ...splitForm, splitPaymentMode: e.target.value as 'equal' | 'custom' })}
+              >
+                <option value="equal">Equal</option>
+                <option value="custom">Custom</option>
+              </select>
+            </div>
+
+            {/* Number of Participants */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Number of Participants</label>
+              <input
+                type="number"
+                min="1"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                placeholder="e.g. 5"
+                value={splitForm.numberOfPeople}
+                onChange={(e) => setSplitForm({ ...splitForm, numberOfPeople: e.target.value })}
+              />
+            </div>
+
+            {/* Amount per Person */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Amount per Person (SAR)</label>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                placeholder="e.g. 100"
+                value={splitForm.amountPerPerson}
+                onChange={(e) => setSplitForm({ ...splitForm, amountPerPerson: e.target.value })}
+              />
+            </div>
+
+            {updateMutation.isError && (
+              <p className="col-span-2 text-sm text-red-600">Failed to save. Please try again.</p>
+            )}
+          </div>
+        )}
+      </Card>
 
       {/* Person Details & Delivery Information */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

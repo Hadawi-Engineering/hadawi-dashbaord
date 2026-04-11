@@ -1,7 +1,7 @@
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { Eye, Trash2, ToggleLeft, ToggleRight, Truck } from 'lucide-react';
+import { Eye, Trash2, ToggleLeft, ToggleRight, Truck, Users } from 'lucide-react';
 import adminService from '../services/adminService';
 import Card from '../components/ui/Card';
 import Table from '../components/ui/Table';
@@ -126,6 +126,8 @@ export default function Occasions() {
               <Table.Th>{t('occasions.name')}</Table.Th>
               <Table.Th>{t('occasions.type')}</Table.Th>
               <Table.Th>{t('occasions.owner')}</Table.Th>
+              <Table.Th>Participants</Table.Th>
+              <Table.Th>Split Pay</Table.Th>
               <Table.Th>{t('common.status')}</Table.Th>
               <Table.Th>{t('common.date')}</Table.Th>
               <Table.Th>{t('common.actions')}</Table.Th>
@@ -146,6 +148,23 @@ export default function Occasions() {
                   <div className="text-gray-600">
                     {occasion.userName || '-'}
                   </div>
+                </Table.Td>
+                <Table.Td>
+                  {(occasion as any).numberOfPeople ? (
+                    <div className="flex items-center gap-1 text-gray-700">
+                      <Users size={14} className="text-gray-400" />
+                      <span>{(occasion as any).numberOfPeople}</span>
+                    </div>
+                  ) : (
+                    <span className="text-gray-400">—</span>
+                  )}
+                </Table.Td>
+                <Table.Td>
+                  {(occasion as any).splitPaymentEnabled ? (
+                    <Badge color="green">Split Pay</Badge>
+                  ) : (
+                    <span className="text-gray-400">—</span>
+                  )}
                 </Table.Td>
                 <Table.Td>
                   <Badge color={occasion.isActive ? 'green' : 'gray'}>
