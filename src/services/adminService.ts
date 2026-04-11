@@ -239,8 +239,8 @@ class AdminService {
     return data;
   }
 
-  async updateOccasion(occasionId: string, occasionData: Partial<Occasion>): Promise<Occasion> {
-    const { data } = await this.api.put<Occasion>(`/occasions/${occasionId}`, occasionData);
+  async updateOccasion(occasionId: string, occasionData: Partial<OccasionDetails>): Promise<OccasionDetails> {
+    const { data } = await this.api.patch<OccasionDetails>(`/occasions/${occasionId}`, occasionData);
     return data;
   }
 
