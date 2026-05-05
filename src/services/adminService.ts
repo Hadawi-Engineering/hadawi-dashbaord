@@ -55,6 +55,9 @@ import type {
   ProductFormData,
   ProductFilters,
   ProductsResponse,
+  CardFormData,
+  CardFilters,
+  CardsResponse,
   ProductCategory,
   CategoryFormData,
   Brand,
@@ -856,6 +859,30 @@ class AdminService {
   }
 
   async deleteProduct(id: string): Promise<void> {
+    await this.api.delete(`/products/${id}`);
+  }
+
+  async getCards(params: CardFilters = {}): Promise<CardsResponse> {
+    const { data } = await this.api.get<CardsResponse>('/products/cards', { params });
+    return data;
+  }
+
+  async createCard(cardData: CardFormData): Promise<Product> {
+    const { data } = await this.api.post<Product>('/products', { ...cardData, isCard: true });
+    return data;
+  }
+
+  async updateCard(id: string, cardData: Partial<CardFormData>): Promise<Product> {
+    const { data } = await this.api.patch<Product>(`/products/${id}`, cardData);
+    return data;
+  }
+
+  async toggleCardActive(id: string, isActive: boolean): Promise<Product> {
+    const { data } = await this.api.patch<Product>(`/products/${id}`, { isActive });
+    return data;
+  }
+
+  async deleteCard(id: string): Promise<void> {
     await this.api.delete(`/products/${id}`);
   }
 

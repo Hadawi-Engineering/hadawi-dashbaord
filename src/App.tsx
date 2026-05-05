@@ -18,6 +18,7 @@ import DeliveryRecords from './pages/DeliveryRecords';
 import Companies from './pages/Companies';
 import Offers from './pages/Offers';
 import Products from './pages/Products';
+import Cards from './pages/Cards';
 import Categories from './pages/Categories';
 import Brands from './pages/Brands';
 import Analytics from './pages/Analytics';
@@ -53,6 +54,7 @@ function App() {
         <Route path="companies" element={<Companies />} />
         <Route path="offers" element={<Offers />} />
         <Route path="products" element={<Products />} />
+        <Route path="cards" element={<Cards />} />
         <Route path="categories" element={<Categories />} />
         <Route path="brands" element={<Brands />} />
         <Route path="analytics" element={<Analytics />} />

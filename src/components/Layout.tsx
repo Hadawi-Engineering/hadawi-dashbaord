@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import type { LucideIcon } from 'lucide-react';
 import {
@@ -71,6 +71,7 @@ export default function Layout() {
       label: t('nav.catalog'),
       children: [
         { path: '/products', icon: Package2, label: t('nav.products') },
+        { path: '/cards', icon: CreditCard, label: t('nav.cards') },
         { path: '/categories', icon: Folder, label: t('nav.categories') },
         { path: '/brands', icon: Tags, label: t('nav.brands') },
       ]
@@ -139,7 +140,7 @@ export default function Layout() {
               const isCatalogItem = item.path === '/catalog';
               const isConfigItem = item.path === '/configuration';
               const isLocationsItem = item.path === '/locations';
-              const isCatalogActive = isCatalogItem && (location.pathname === '/products' || location.pathname === '/categories' || location.pathname === '/brands');
+              const isCatalogActive = isCatalogItem && (location.pathname === '/products' || location.pathname === '/cards' || location.pathname === '/categories' || location.pathname === '/brands');
               const isConfigActive = isConfigItem && (location.pathname === '/occasion-types' || location.pathname === '/taxes' || location.pathname === '/packaging');
               const isLocationsActive = isLocationsItem && (location.pathname === '/regions' || location.pathname === '/cities');
 
