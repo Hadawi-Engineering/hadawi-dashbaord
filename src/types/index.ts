@@ -995,6 +995,7 @@ export interface Product {
   descriptionEn?: string;
   price: number;
   images: string[];
+  isCard?: boolean;
   categoryId?: string;
   brandId?: string;
   occasionTypes: string[];
@@ -1034,6 +1035,27 @@ export interface ProductFormData {
   tags: string[];
   metadata?: any;
   cityIds?: string[];
+}
+
+export interface CardFormData {
+  nameAr: string;
+  nameEn: string;
+  descriptionAr?: string;
+  descriptionEn?: string;
+  price: number;
+  images: string[];
+  isActive: boolean;
+  stock: number;
+  sku?: string;
+}
+
+export interface CardFilters {
+  isActive?: boolean;
+}
+
+export interface CardsResponse {
+  data: Product[];
+  total: number;
 }
 
 export interface ProductFilters {
