@@ -954,10 +954,12 @@ export interface Brand {
   id: string;
   nameAr: string;
   nameEn: string;
-  descriptionAr?: string;
-  descriptionEn?: string;
-  logo?: string;
-  website?: string;
+  descriptionAr?: string | null;
+  descriptionEn?: string | null;
+  logo?: string | null;
+  website?: string | null;
+  contactEmail?: string | null;
+  contactMobile?: string | null;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
@@ -976,6 +978,8 @@ export interface BrandFormData {
   descriptionEn?: string;
   logo?: string;
   website?: string;
+  contactEmail?: string;
+  contactMobile?: string;
   isActive: boolean;
 }
 
