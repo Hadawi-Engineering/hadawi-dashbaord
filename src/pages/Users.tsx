@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Eye, Ban, Trash2, UserCheck } from 'lucide-react';
+import WhatsAppButton from '../components/WhatsAppButton';
 import adminService from '../services/adminService';
 import Card from '../components/ui/Card';
 import Table from '../components/ui/Table';
@@ -142,6 +143,7 @@ export default function Users() {
                 </Table.Td>
                 <Table.Td>
                   <div className="flex items-center gap-2">
+                    {user.phone && <WhatsAppButton phone={user.phone} />}
                     <Button
                       size="sm"
                       variant="secondary"
@@ -206,7 +208,10 @@ export default function Users() {
               </div>
               <div>
                 <p className="text-sm text-gray-500">{t('common.phone')}</p>
-                <p className="font-medium text-gray-900" dir="ltr">{selectedUser.phone}</p>
+                <div className="flex items-center gap-2">
+                  <p className="font-medium text-gray-900" dir="ltr">{selectedUser.phone}</p>
+                  {selectedUser.phone && <WhatsAppButton phone={selectedUser.phone} size="md" />}
+                </div>
               </div>
               <div>
                 <p className="text-sm text-gray-500">{t('common.city')}</p>

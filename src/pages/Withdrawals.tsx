@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { CheckCircle, XCircle, Eye } from 'lucide-react';
+import WhatsAppButton from '../components/WhatsAppButton';
 import adminService from '../services/adminService';
 import Card from '../components/ui/Card';
 import Table from '../components/ui/Table';
@@ -152,6 +153,7 @@ export default function Withdrawals() {
                 </Table.Td>
                 <Table.Td>
                   <div className="flex items-center gap-2">
+                    {request.phone && <WhatsAppButton phone={request.phone} />}
                     <Button
                       size="sm"
                       variant="secondary"
@@ -210,7 +212,10 @@ export default function Withdrawals() {
               </div>
               <div>
                 <p className="text-sm text-gray-500">{t('common.phone')}</p>
-                <p className="font-medium text-gray-900" dir="ltr">{selectedRequest.phone}</p>
+                <div className="flex items-center gap-2">
+                  <p className="font-medium text-gray-900" dir="ltr">{selectedRequest.phone}</p>
+                  {selectedRequest.phone && <WhatsAppButton phone={selectedRequest.phone} size="md" />}
+                </div>
               </div>
               <div className="col-span-2">
                 <p className="text-sm text-gray-500">{t('withdrawals.accountNumber')}</p>
