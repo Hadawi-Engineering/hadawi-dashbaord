@@ -40,10 +40,19 @@ import type {
   NotificationTemplateCreate,
   NotificationTemplateUpdate,
   NotificationSend,
+  SendNotificationPayload,
+  SendNotificationResponse,
   NotificationSendToTopic,
   NotificationTriggerRequest,
   NotificationStats,
   NotificationHistory,
+  NotificationHistoryParams,
+  NotificationHistoryListResponse,
+  NotificationDeliveryStatistics,
+  ScheduledNotification,
+  SchedulesListResponse,
+  UpdateSchedulePayload,
+  NotificationSchedulesParams,
   NotificationTrigger,
   PaginationParams,
   CloudinaryUploadSignature,
@@ -722,7 +731,6 @@ class AdminService {
 
   async getNotificationTemplates(params: { trigger?: NotificationTrigger } = {}): Promise<NotificationTemplate[]> {
     const { data } = await this.api.get<NotificationTemplate[]>('/notifications/dashboard/templates', { params });
-    console.log(data);
     return data;
   }
 
@@ -756,16 +764,28 @@ class AdminService {
 
   // ==================== NOTIFICATION SENDING ====================
 
-  async sendCustomNotification(notificationData: NotificationSend): Promise<void> {
-    await this.api.post('/notifications/dashboard/send', notificationData);
+  async sendDashboardNotification(payload: SendNotificationPayload): Promise<SendNotificationResponse> {
+    const { data } = await this.api.post<SendNotificationResponse>('/notifications/dashboard/send', payload);
+    return data;
+  }
+
+  /** @deprecated Use sendDashboardNotification */
+  async sendCustomNotification(notificationData: NotificationSend): Promise<SendNotificationResponse> {
+    return this.sendDashboardNotification(notificationData);
   }
 
   async sendNotificationToTopic(payload: NotificationSendToTopic): Promise<void> {
     await this.api.post('/notifications/send-to-topic', payload);
   }
 
-  async sendNotificationToAll(payload: { title: string; body: string; imageUrl?: string }): Promise<void> {
-    await this.api.post('/notifications/send-to-all', payload);
+  /** @deprecated Use sendDashboardNotification with userIds: ['all'] */
+  async sendNotificationToAll(payload: { title: string; body: string; imageUrl?: string }): Promise<SendNotificationResponse> {
+    return this.sendDashboardNotification({
+      userIds: ['all'],
+      title: payload.title,
+      body: payload.body,
+      imageUrl: payload.imageUrl,
+    });
   }
 
   async triggerEventNotification(trigger: NotificationTrigger, requestData: NotificationTriggerRequest): Promise<void> {
@@ -777,16 +797,67 @@ class AdminService {
     return data;
   }
 
-  // ==================== NOTIFICATION ANALYTICS ====================
+  // ==================== NOTIFICATION SCHEDULES ====================
+
+  async getNotificationSchedules(params: NotificationSchedulesParams = {}): Promise<SchedulesListResponse> {
+    const { data } = await this.api.get<SchedulesListResponse>('/notifications/dashboard/schedules', { params });
+    return data;
+  }
+
+  async getNotificationSchedule(id: string): Promise<ScheduledNotification> {
+    const { data } = await this.api.get<ScheduledNotification>(`/notifications/dashboard/schedules/${id}`);
+    return data;
+  }
+
+  async cancelNotificationSchedule(id: string): Promise<ScheduledNotification> {
+    const { data } = await this.api.patch<ScheduledNotification>(`/notifications/dashboard/schedules/${id}/cancel`);
+    return data;
+  }
+
+  async updateNotificationSchedule(id: string, payload: UpdateSchedulePayload): Promise<ScheduledNotification> {
+    const { data } = await this.api.patch<ScheduledNotification>(`/notifications/dashboard/schedules/${id}`, payload);
+    return data;
+  }
+
+  // ==================== NOTIFICATION HISTORY & ANALYTICS ====================
 
   async getNotificationStats(): Promise<NotificationStats> {
     const { data } = await this.api.get<NotificationStats>('/notifications/dashboard/stats');
     return data;
   }
 
-  async getNotificationHistory(params: PaginationParams = {}): Promise<NotificationHistory[]> {
-    const { data } = await this.api.get<NotificationHistory[] | { data: NotificationHistory[] }>('/notifications/dashboard/history', { params });
-    return Array.isArray(data) ? data : (data.data || []);
+  async getNotificationDeliveryStatistics(params: { startDate?: string; endDate?: string } = {}): Promise<NotificationDeliveryStatistics> {
+    const { data } = await this.api.get<NotificationDeliveryStatistics>('/notifications/dashboard/history/statistics', { params });
+    return data;
+  }
+
+  async getNotificationHistory(params: NotificationHistoryParams = {}): Promise<{
+    items: NotificationHistory[];
+    total: number;
+    page: number;
+    limit: number;
+  }> {
+    const { data } = await this.api.get<NotificationHistory[] | NotificationHistoryListResponse>(
+      '/notifications/dashboard/history',
+      { params }
+    );
+
+    if (Array.isArray(data)) {
+      return {
+        items: data,
+        total: data.length,
+        page: params.page ?? 1,
+        limit: params.limit ?? 20,
+      };
+    }
+
+    const items = data.history ?? data.data ?? data.items ?? [];
+    return {
+      items,
+      total: data.total ?? items.length,
+      page: data.page ?? params.page ?? 1,
+      limit: data.limit ?? params.limit ?? 20,
+    };
   }
 
   // ==================== COMPANIES ====================

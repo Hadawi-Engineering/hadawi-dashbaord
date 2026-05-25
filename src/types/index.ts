@@ -560,7 +560,24 @@ export type NotificationTrigger =
   | 'payment_received'
   | 'occasion_completed'
   | 'occasion_created'
-  | 'payment_reminder';
+  | 'payment_reminder'
+  | 'occasion_reminder'
+  | 'user_followed'
+  | 'custom';
+
+export type NotificationScheduleType =
+  | 'once'
+  | 'daily'
+  | 'every_3_days'
+  | 'weekly'
+  | 'monthly';
+
+export type ScheduleStatus =
+  | 'pending'
+  | 'active'
+  | 'completed'
+  | 'cancelled'
+  | 'failed';
 
 export interface NotificationTemplateCreate {
   name: string;
@@ -586,13 +603,73 @@ export interface NotificationTemplateUpdate {
 }
 
 // Notification Sending Types
-export interface NotificationSend {
+export interface SendNotificationPayload {
   userIds: string[];
   title: string;
   body: string;
   imageUrl?: string;
-  data?: Record<string, any>;
+  data?: Record<string, string>;
+  scheduleType?: NotificationScheduleType;
   scheduledAt?: string;
+  endAt?: string;
+}
+
+/** @deprecated Use SendNotificationPayload */
+export interface NotificationSend extends SendNotificationPayload {}
+
+export interface SendNotificationResponse {
+  success: boolean;
+  message: string;
+  sent?: number;
+  failed?: number;
+  data?: {
+    id: string;
+    scheduleType: NotificationScheduleType;
+    nextRunAt: string;
+  };
+}
+
+export interface ScheduledNotification {
+  id: string;
+  userIds: string[];
+  title: string;
+  body: string;
+  imageUrl?: string | null;
+  data?: Record<string, unknown> | null;
+  scheduleType: NotificationScheduleType;
+  scheduledAt: string;
+  nextRunAt: string;
+  lastRunAt?: string | null;
+  endAt?: string | null;
+  runCount: number;
+  status: ScheduleStatus;
+  sentAt?: string | null;
+  failureReason?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SchedulesListResponse {
+  schedules: ScheduledNotification[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+export interface UpdateSchedulePayload {
+  title?: string;
+  body?: string;
+  imageUrl?: string;
+  scheduleType?: NotificationScheduleType;
+  scheduledAt?: string;
+  endAt?: string;
+}
+
+export interface NotificationSchedulesParams {
+  status?: ScheduleStatus;
+  scheduleType?: NotificationScheduleType;
+  page?: number;
+  limit?: number;
 }
 
 export interface NotificationSendToTopic {
@@ -616,15 +693,50 @@ export interface NotificationStats {
   triggers: Record<NotificationTrigger, number>;
 }
 
+export type NotificationDeliveryStatus = 'sent' | 'failed' | 'pending' | 'cancelled';
+
 export interface NotificationHistory {
   id: string;
   title: string;
   body: string;
-  userIds: string[];
+  userIds?: string[];
+  userId?: string;
   sentAt: string;
-  status: 'sent' | 'failed' | 'pending' | 'cancelled';
+  status?: NotificationDeliveryStatus;
+  deliveryStatus?: NotificationDeliveryStatus;
+  trigger?: NotificationTrigger | 'custom';
   templateId?: string;
   scheduledAt?: string;
+  imageUrl?: string;
+  createdAt?: string;
+}
+
+export interface NotificationHistoryParams {
+  page?: number;
+  limit?: number;
+  userId?: string;
+  trigger?: NotificationTrigger | 'custom';
+  deliveryStatus?: NotificationDeliveryStatus;
+  templateId?: string;
+  startDate?: string;
+  endDate?: string;
+}
+
+export interface NotificationHistoryListResponse {
+  history?: NotificationHistory[];
+  data?: NotificationHistory[];
+  items?: NotificationHistory[];
+  total?: number;
+  page?: number;
+  limit?: number;
+}
+
+export interface NotificationDeliveryStatistics {
+  totalSent?: number;
+  totalFailed?: number;
+  deliveryRate?: number;
+  byTrigger?: Record<string, number>;
+  [key: string]: unknown;
 }
 
 // Template Variables
@@ -654,6 +766,9 @@ export interface TemplateVariables {
     occasionId: string;
     daysLeft: string;
   };
+  occasion_reminder: Record<string, string>;
+  user_followed: Record<string, string>;
+  custom: Record<string, string>;
 }
 
 // Pagination Types
