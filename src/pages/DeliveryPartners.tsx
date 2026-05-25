@@ -11,6 +11,7 @@ import Pagination from '../components/ui/Pagination';
 import Modal from '../components/ui/Modal';
 import type { DeliveryPartner, DeliveryPartnerCreate, DeliveryPartnerUpdate, DeliveryPartnerStatistics } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
+import WhatsAppButton from '../components/WhatsAppButton';
 
 export default function DeliveryPartners() {
   const { t, isRTL } = useLanguage();
@@ -240,6 +241,7 @@ export default function DeliveryPartners() {
       label: t('common.actions'),
       render: (partner: DeliveryPartner) => (
         <div className="flex items-center gap-2">
+          {partner.phone && <WhatsAppButton phone={partner.phone} />}
           <Button
             size="sm"
             variant="secondary"
@@ -954,7 +956,10 @@ function DeliveryPartnerViewModal({ isOpen, onClose, partner }: DeliveryPartnerV
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">{t('deliveryPartners.phone')}</p>
-                  <p className="font-medium text-gray-900">{partner.phone}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="font-medium text-gray-900" dir="ltr">{partner.phone}</p>
+                    {partner.phone && <WhatsAppButton phone={partner.phone} size="md" />}
+                  </div>
                 </div>
               </div>
             </div>

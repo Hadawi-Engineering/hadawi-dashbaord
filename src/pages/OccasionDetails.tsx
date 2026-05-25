@@ -7,6 +7,7 @@ import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
 import DeliveryDetailsModal from '../components/DeliveryDetailsModal';
+import WhatsAppButton from '../components/WhatsAppButton';
 import { useLanguage } from '../contexts/LanguageContext';
 
 export default function OccasionDetails() {
@@ -622,7 +623,12 @@ export default function OccasionDetails() {
                 <Phone className="w-4 h-4 text-gray-400" />
                 <div className="flex-1">
                   <p className="text-sm text-gray-600">Phone</p>
-                  <p className="font-medium text-gray-900">{occasion.person.phone}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="font-medium text-gray-900" dir="ltr">{occasion.person.phone}</p>
+                    {occasion.person.phone && (
+                      <WhatsAppButton phone={occasion.person.phone} />
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -649,7 +655,10 @@ export default function OccasionDetails() {
               {occasion.receiverPhone && (
                 <div>
                   <p className="text-sm text-gray-600">Receiver Phone</p>
-                  <p className="font-medium text-gray-900">{occasion.receiverPhone}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="font-medium text-gray-900" dir="ltr">{occasion.receiverPhone}</p>
+                    <WhatsAppButton phone={occasion.receiverPhone} />
+                  </div>
                 </div>
               )}
               <div>

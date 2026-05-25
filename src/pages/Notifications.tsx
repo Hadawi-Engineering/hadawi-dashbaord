@@ -18,6 +18,7 @@ import { Modal } from '../components/ui/Modal';
 import { Badge } from '../components/ui/Badge';
 import { Table } from '../components/ui/Table';
 import { StatCard } from '../components/ui/StatCard';
+import WhatsAppButton from '../components/WhatsAppButton';
 
 export default function NotificationsPage() {
   const { t } = useLanguage();
@@ -648,22 +649,33 @@ export default function NotificationsPage() {
               <label className="block text-sm font-medium mb-2">{t('notifications.usersList')}</label>
               <div className="border rounded-lg p-2 max-h-40 overflow-y-auto">
                 {users.map((user) => (
-                  <label key={user.id} className="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded">
-                    <input
-                      type="checkbox"
-                      checked={selectedUsers.includes(user.id)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setSelectedUsers([...selectedUsers, user.id]);
-                        } else {
-                          setSelectedUsers(selectedUsers.filter(id => id !== user.id));
-                        }
-                      }}
-                      className="rounded"
-                    />
-                    <span className="text-sm">
-                      {user.name} ({user.email})
-                    </span>
+                  <label key={user.id} className="flex items-center justify-between gap-2 p-2 hover:bg-gray-50 rounded">
+                    <div className="flex items-center space-x-2 min-w-0">
+                      <input
+                        type="checkbox"
+                        checked={selectedUsers.includes(user.id)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedUsers([...selectedUsers, user.id]);
+                          } else {
+                            setSelectedUsers(selectedUsers.filter(id => id !== user.id));
+                          }
+                        }}
+                        className="rounded"
+                      />
+                      <span className="text-sm truncate">
+                        {user.name} ({user.email})
+                      </span>
+                    </div>
+                    {user.phone && (
+                      <span
+                        className="flex-shrink-0"
+                        onClick={(e) => e.preventDefault()}
+                        onKeyDown={(e) => e.stopPropagation()}
+                      >
+                        <WhatsAppButton phone={user.phone} />
+                      </span>
+                    )}
                   </label>
                 ))}
               </div>
@@ -750,22 +762,33 @@ export default function NotificationsPage() {
             <label className="block text-sm font-medium mb-2">{t('notifications.usersList')}</label>
             <div className="border rounded-lg p-2 max-h-40 overflow-y-auto">
               {users.map((user) => (
-                <label key={user.id} className="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded">
-                  <input
-                    type="checkbox"
-                    checked={selectedUsers.includes(user.id)}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setSelectedUsers([...selectedUsers, user.id]);
-                      } else {
-                        setSelectedUsers(selectedUsers.filter(id => id !== user.id));
-                      }
-                    }}
-                    className="rounded"
-                  />
-                  <span className="text-sm">
-                    {user.name} ({user.email})
-                  </span>
+                <label key={user.id} className="flex items-center justify-between gap-2 p-2 hover:bg-gray-50 rounded">
+                  <div className="flex items-center space-x-2 min-w-0">
+                    <input
+                      type="checkbox"
+                      checked={selectedUsers.includes(user.id)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedUsers([...selectedUsers, user.id]);
+                        } else {
+                          setSelectedUsers(selectedUsers.filter(id => id !== user.id));
+                        }
+                      }}
+                      className="rounded"
+                    />
+                    <span className="text-sm truncate">
+                      {user.name} ({user.email})
+                    </span>
+                  </div>
+                  {user.phone && (
+                    <span
+                      className="flex-shrink-0"
+                      onClick={(e) => e.preventDefault()}
+                      onKeyDown={(e) => e.stopPropagation()}
+                    >
+                      <WhatsAppButton phone={user.phone} />
+                    </span>
+                  )}
                 </label>
               ))}
             </div>
