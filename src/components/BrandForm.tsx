@@ -19,6 +19,8 @@ export default function BrandForm({
     isLoading = false
 }: BrandFormProps) {
     useScrollLock(true);
+    const isEdit = Boolean(brand?.id);
+
     const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<BrandFormData>({
         defaultValues: brand || {
             nameAr: '',
@@ -27,6 +29,8 @@ export default function BrandForm({
             descriptionEn: '',
             logo: '',
             website: '',
+            contactEmail: '',
+            contactMobile: '',
             isActive: true,
         }
     });
@@ -34,9 +38,18 @@ export default function BrandForm({
     const logo = watch('logo');
 
     const handleFormSubmit = (data: BrandFormData) => {
-        // Remove read-only fields if they exist (only used for determining edit mode, not for submission)
-        const { id, createdAt, updatedAt, _count, ...cleanData } = data as any;
-        onSubmit(cleanData);
+        const { id, createdAt, updatedAt, _count, ...cleanData } = data as BrandFormData & {
+            id?: string;
+            createdAt?: string;
+            updatedAt?: string;
+            _count?: unknown;
+        };
+
+        onSubmit({
+            ...cleanData,
+            contactEmail: cleanData.contactEmail?.trim() || undefined,
+            contactMobile: cleanData.contactMobile?.trim() || undefined,
+        });
     };
 
     return (
@@ -143,6 +156,62 @@ export default function BrandForm({
                             {errors.website && (
                                 <p className="mt-1 text-sm text-red-600">{errors.website.message}</p>
                             )}
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Brand Contact Email {!isEdit && '*'}
+                                </label>
+                                <input
+                                    {...register('contactEmail', {
+                                        validate: (value) => {
+                                            const trimmed = value?.trim() ?? '';
+                                            if (!isEdit && !trimmed) {
+                                                return 'Brand contact email is required';
+                                            }
+                                            if (!trimmed) return true;
+                                            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)
+                                                || 'Please enter a valid email address';
+                                        },
+                                    })}
+                                    type="email"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                    placeholder="contact@brand.com"
+                                />
+                                {errors.contactEmail && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.contactEmail.message}</p>
+                                )}
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Brand Contact Mobile {!isEdit && '*'}
+                                </label>
+                                <input
+                                    {...register('contactMobile', {
+                                        validate: (value) => {
+                                            const trimmed = value?.trim() ?? '';
+                                            if (!isEdit && !trimmed) {
+                                                return 'Brand contact mobile is required';
+                                            }
+                                            if (!trimmed) return true;
+                                            const digits = trimmed.replace(/\D/g, '');
+                                            if (digits.length < 9) {
+                                                return 'Please enter a valid mobile number';
+                                            }
+                                            return true;
+                                        },
+                                    })}
+                                    type="tel"
+                                    dir="ltr"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                    placeholder="+966501234567"
+                                />
+                                {errors.contactMobile && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.contactMobile.message}</p>
+                                )}
+                            </div>
                         </div>
                     </div>
 

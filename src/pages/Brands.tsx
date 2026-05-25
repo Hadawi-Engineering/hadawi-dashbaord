@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Edit, Trash2, ExternalLink } from 'lucide-react';
+import { Plus, Edit, Trash2, ExternalLink, Mail, Phone } from 'lucide-react';
 import adminService from '../services/adminService';
 import type { Brand, BrandFormData } from '../types';
 import BrandForm from '../components/BrandForm';
@@ -73,6 +73,8 @@ export default function Brands() {
             descriptionEn: brand.descriptionEn || '',
             logo: brand.logo || '',
             website: brand.website || '',
+            contactEmail: brand.contactEmail || '',
+            contactMobile: brand.contactMobile || '',
             isActive: brand.isActive,
         };
         // Keep the brand object for tracking which brand is being edited
@@ -181,6 +183,19 @@ export default function Brands() {
                                                 <ExternalLink size={14} />
                                             </a>
                                         )}
+
+                                        <div className="space-y-1 pt-1">
+                                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                                                <Mail size={14} className="text-gray-400 shrink-0" />
+                                                <span className="truncate" dir="ltr">
+                                                    {brand.contactEmail || '—'}
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                                                <Phone size={14} className="text-gray-400 shrink-0" />
+                                                <span dir="ltr">{brand.contactMobile || '—'}</span>
+                                            </div>
+                                        </div>
                                     </div>
 
                                     {/* Actions */}
