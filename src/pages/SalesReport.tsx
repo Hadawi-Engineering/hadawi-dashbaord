@@ -27,7 +27,6 @@ import adminService from '../services/adminService';
 import Card from '../components/ui/Card';
 import StatCard from '../components/ui/StatCard';
 import Button from '../components/ui/Button';
-import Badge from '../components/ui/Badge';
 import Table from '../components/ui/Table';
 import Pagination from '../components/ui/Pagination';
 import MultiSelect from '../components/ui/MultiSelect';
@@ -36,17 +35,7 @@ import type { SalesReportFilters } from '../types';
 
 const PAGE_SIZE = 20;
 
-const STATUS_OPTIONS = ['completed', 'pending', 'failed', 'refunded'];
 const GROUP_BY_OPTIONS = ['day', 'week', 'month', 'brand', 'product', 'category'];
-
-function statusColor(status: string): 'green' | 'yellow' | 'red' | 'gray' {
-  switch (status) {
-    case 'completed': return 'green';
-    case 'pending': return 'yellow';
-    case 'failed': return 'red';
-    default: return 'gray';
-  }
-}
 
 function ReportSkeleton() {
   return (
@@ -94,7 +83,6 @@ export default function SalesReport() {
   const [selectedBrandNames, setSelectedBrandNames] = useState<string[]>([]);
   const [selectedCategoryNames, setSelectedCategoryNames] = useState<string[]>([]);
   const [selectedCityNames, setSelectedCityNames] = useState<string[]>([]);
-  const [paymentStatus, setPaymentStatus] = useState('');
   const [occasionType, setOccasionType] = useState('');
   const [giftType, setGiftType] = useState('');
   const [groupBy, setGroupBy] = useState('month');
@@ -162,7 +150,6 @@ export default function SalesReport() {
     if (brandIds.length) filters.brandIds = brandIds;
     if (categoryIds.length) filters.categoryIds = categoryIds;
     if (cityList.length) filters.cities = cityList;
-    if (paymentStatus) filters.paymentStatus = paymentStatus;
     if (occasionType) filters.occasionType = occasionType;
     if (giftType) filters.giftType = giftType;
     if (groupBy) filters.groupBy = groupBy;
@@ -177,7 +164,6 @@ export default function SalesReport() {
     setSelectedBrandNames([]);
     setSelectedCategoryNames([]);
     setSelectedCityNames([]);
-    setPaymentStatus('');
     setOccasionType('');
     setGiftType('');
     setGroupBy('month');
@@ -297,23 +283,6 @@ export default function SalesReport() {
                 onChange={setSelectedCityNames}
                 placeholder={t('common.all')}
               />
-            </div>
-
-            {/* Payment status */}
-            <div>
-              <label className={labelStyle}>{t('salesReport.paymentStatus')}</label>
-              <select
-                value={paymentStatus}
-                onChange={(e) => setPaymentStatus(e.target.value)}
-                className={inputClass}
-              >
-                <option value="">{t('common.all')}</option>
-                {STATUS_OPTIONS.map((s) => (
-                  <option key={s} value={s}>
-                    {t(`payments.${s}`) || s}
-                  </option>
-                ))}
-              </select>
             </div>
 
             {/* Occasion type */}
@@ -592,9 +561,8 @@ export default function SalesReport() {
                       <Table.Th>{t('occasions.name')}</Table.Th>
                       <Table.Th>{t('payments.name')}</Table.Th>
                       <Table.Th>{t('payments.amount')}</Table.Th>
-                      <Table.Th>{t('common.status')}</Table.Th>
-                      <Table.Th>{t('salesReport.giftType')}</Table.Th>
                       <Table.Th>{t('common.city')}</Table.Th>
+                      <Table.Th>{t('salesReport.giftType')}</Table.Th>
                       <Table.Th>{t('brands.title')}</Table.Th>
                       <Table.Th>{t('products.title')}</Table.Th>
                     </Table.Row>
@@ -612,13 +580,8 @@ export default function SalesReport() {
                         <Table.Td className="font-semibold text-gray-900">
                           {tx.amount.toLocaleString()} SAR
                         </Table.Td>
-                        <Table.Td>
-                          <Badge color={statusColor(tx.status)}>
-                            {t(`payments.${tx.status}`) || tx.status}
-                          </Badge>
-                        </Table.Td>
-                        <Table.Td className="text-gray-600 capitalize">{tx.giftType}</Table.Td>
                         <Table.Td className="text-gray-600">{tx.city}</Table.Td>
+                        <Table.Td className="text-gray-600 capitalize">{tx.giftType}</Table.Td>
                         <Table.Td className="text-gray-600 max-w-[120px] truncate">{tx.brands}</Table.Td>
                         <Table.Td className="text-gray-600 max-w-[120px] truncate">{tx.products}</Table.Td>
                       </Table.Row>

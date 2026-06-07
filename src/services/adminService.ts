@@ -1037,7 +1037,6 @@ class AdminService {
     const params = new URLSearchParams();
     if (filters.startDate) params.append('startDate', filters.startDate);
     if (filters.endDate) params.append('endDate', filters.endDate);
-    if (filters.paymentStatus) params.append('paymentStatus', filters.paymentStatus);
     if (filters.occasionType) params.append('occasionType', filters.occasionType);
     if (filters.giftType) params.append('giftType', filters.giftType);
     if (filters.groupBy) params.append('groupBy', filters.groupBy);
