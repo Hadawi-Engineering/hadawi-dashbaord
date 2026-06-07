@@ -1207,7 +1207,6 @@ export interface SalesReportFilters {
   productIds?: string[];
   categoryIds?: string[];
   cities?: string[];
-  paymentStatus?: string;
   occasionType?: string;
   giftType?: string;
   groupBy?: string;
