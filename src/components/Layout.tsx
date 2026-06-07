@@ -14,6 +14,7 @@ import {
   Calculator,
   Package,
   BarChart3,
+  FileBarChart,
   Settings,
   LogOut,
   Menu,
@@ -107,6 +108,7 @@ export default function Layout() {
       ]
     },
     { path: '/analytics', icon: BarChart3, label: t('nav.analytics') },
+    { path: '/sales-report', icon: FileBarChart, label: t('nav.salesReport') },
     { path: '/settings', icon: Settings, label: t('nav.settings') },
   ];
 

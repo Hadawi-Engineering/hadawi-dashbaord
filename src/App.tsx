@@ -23,6 +23,7 @@ import Categories from './pages/Categories';
 import Brands from './pages/Brands';
 import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
+import SalesReport from './pages/SalesReport';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 import { Regions } from './pages/Regions';
@@ -58,6 +59,7 @@ function App() {
         <Route path="categories" element={<Categories />} />
         <Route path="brands" element={<Brands />} />
         <Route path="analytics" element={<Analytics />} />
+        <Route path="sales-report" element={<SalesReport />} />
         <Route path="settings" element={<Settings />} />
       </Route>
     </Routes>

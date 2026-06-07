@@ -1198,3 +1198,69 @@ export interface ProductsResponse {
     totalPages: number;
   };
 }
+
+// Sales Report Types
+export interface SalesReportFilters {
+  startDate?: string;
+  endDate?: string;
+  brandIds?: string[];
+  productIds?: string[];
+  categoryIds?: string[];
+  cities?: string[];
+  paymentStatus?: string;
+  occasionType?: string;
+  giftType?: string;
+  groupBy?: string;
+  page?: number;
+  pageSize?: number;
+}
+
+export interface SalesBreakdownItem {
+  label: string;
+  revenue: number;
+  transactions: number;
+  avgOrderValue: number;
+}
+
+export interface SalesTopProduct {
+  id: string;
+  name: string;
+  sales: number;
+  revenue: number;
+}
+
+export interface SalesTopBrand {
+  id: string;
+  name: string;
+  sales: number;
+  revenue: number;
+}
+
+export interface SalesTransaction {
+  date: string;
+  occasionId: string;
+  occasionName: string;
+  payerName: string;
+  amount: number;
+  status: string;
+  giftType: string;
+  city: string;
+  brands: string;
+  products: string;
+}
+
+export interface SalesReportResponse {
+  summary: {
+    totalRevenue: number;
+    totalTransactions: number;
+    averageOrderValue: number;
+    totalDiscount: number;
+    netRevenue: number;
+    dateRange: { from: string; to: string };
+  };
+  breakdown: SalesBreakdownItem[];
+  topProducts: SalesTopProduct[];
+  topBrands: SalesTopBrand[];
+  transactions: SalesTransaction[];
+  totalTransactionCount: number;
+}

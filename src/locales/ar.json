@@ -55,7 +55,8 @@
     "settings": "الإعدادات",
     "companies": "الشركات",
     "offers": "العروض",
-    "logout": "تسجيل الخروج"
+    "logout": "تسجيل الخروج",
+    "salesReport": "تقرير المبيعات"
   },
   "login": {
     "title": "تسجيل دخول الإدارة",
@@ -892,5 +893,27 @@
     "colleague": "زميل",
     "boss": "المدير",
     "teacher": "المعلم"
+  },
+  "salesReport": {
+    "title": "تقرير المبيعات",
+    "applyFilters": "تطبيق الفلاتر",
+    "reset": "إعادة تعيين",
+    "exportExcel": "تصدير Excel",
+    "exportPdf": "تصدير PDF",
+    "totalRevenue": "إجمالي الإيرادات",
+    "totalTransactions": "إجمالي المعاملات",
+    "avgOrderValue": "متوسط قيمة الطلب",
+    "totalDiscount": "إجمالي الخصم",
+    "netRevenue": "صافي الإيرادات",
+    "breakdownChart": "تفاصيل الإيرادات",
+    "topProducts": "أفضل المنتجات",
+    "topBrands": "أفضل العلامات التجارية",
+    "transactions": "المعاملات",
+    "groupBy": "تجميع حسب",
+    "paymentStatus": "حالة الدفع",
+    "occasionType": "نوع المناسبة",
+    "giftType": "نوع الهدية",
+    "startDate": "تاريخ البداية",
+    "endDate": "تاريخ النهاية"
   }
 }
