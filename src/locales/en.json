@@ -55,7 +55,8 @@
     "settings": "Settings",
     "companies": "Companies",
     "offers": "Offers",
-    "logout": "Logout"
+    "logout": "Logout",
+    "salesReport": "Sales Report"
   },
   "login": {
     "title": "Admin Login",
@@ -887,5 +888,27 @@
     "colleague": "Colleague",
     "boss": "Boss",
     "teacher": "Teacher"
+  },
+  "salesReport": {
+    "title": "Sales Report",
+    "applyFilters": "Apply Filters",
+    "reset": "Reset",
+    "exportExcel": "Export Excel",
+    "exportPdf": "Export PDF",
+    "totalRevenue": "Total Revenue",
+    "totalTransactions": "Total Transactions",
+    "avgOrderValue": "Avg Order Value",
+    "totalDiscount": "Total Discount",
+    "netRevenue": "Net Revenue",
+    "breakdownChart": "Revenue Breakdown",
+    "topProducts": "Top Products",
+    "topBrands": "Top Brands",
+    "transactions": "Transactions",
+    "groupBy": "Group By",
+    "paymentStatus": "Payment Status",
+    "occasionType": "Occasion Type",
+    "giftType": "Gift Type",
+    "startDate": "Start Date",
+    "endDate": "End Date"
   }
 }

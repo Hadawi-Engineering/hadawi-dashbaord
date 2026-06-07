@@ -74,6 +74,8 @@ import type {
   OccasionType,
   OccasionTypeFormData,
   PackagingFormData,
+  SalesReportFilters,
+  SalesReportResponse,
 } from '../types';
 
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
@@ -1011,6 +1013,41 @@ class AdminService {
 
   async deleteBrand(id: string): Promise<void> {
     await this.api.delete(`/brands/${id}`);
+  }
+
+  // ==================== SALES REPORTS ====================
+
+  async getSalesReport(filters: SalesReportFilters): Promise<SalesReportResponse> {
+    const params = this.buildSalesParams(filters);
+    const { data } = await this.api.get<SalesReportResponse>('/reports/sales', { params });
+    return data;
+  }
+
+  async exportSalesReport(filters: SalesReportFilters, format: 'excel' | 'pdf'): Promise<Blob> {
+    const params = this.buildSalesParams(filters);
+    params.append('format', format);
+    const { data } = await this.api.get('/reports/sales/export', {
+      params,
+      responseType: 'blob',
+    });
+    return data;
+  }
+
+  private buildSalesParams(filters: SalesReportFilters): URLSearchParams {
+    const params = new URLSearchParams();
+    if (filters.startDate) params.append('startDate', filters.startDate);
+    if (filters.endDate) params.append('endDate', filters.endDate);
+    if (filters.paymentStatus) params.append('paymentStatus', filters.paymentStatus);
+    if (filters.occasionType) params.append('occasionType', filters.occasionType);
+    if (filters.giftType) params.append('giftType', filters.giftType);
+    if (filters.groupBy) params.append('groupBy', filters.groupBy);
+    if (filters.page != null) params.append('page', String(filters.page));
+    if (filters.pageSize != null) params.append('pageSize', String(filters.pageSize));
+    filters.brandIds?.forEach((id) => params.append('brandIds[]', id));
+    filters.productIds?.forEach((id) => params.append('productIds[]', id));
+    filters.categoryIds?.forEach((id) => params.append('categoryIds[]', id));
+    filters.cities?.forEach((c) => params.append('cities[]', c));
+    return params;
   }
 }
 
