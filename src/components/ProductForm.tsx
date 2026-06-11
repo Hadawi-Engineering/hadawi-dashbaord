@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { X } from 'lucide-react';
-import type { ProductFormData, ProductCategory, Brand, City } from '../types';
-import { OCCASION_TYPES, RECIPIENT_TYPES } from '../types';
+import type { ProductFormData, ProductCategory, Brand, City, OccasionType } from '../types';
+import { RECIPIENT_TYPES } from '../types';
 import ImageUpload from './ui/ImageUpload';
 import MultiSelect from './ui/MultiSelect';
 import CityMultiSelect from './ui/CityMultiSelect';
@@ -30,6 +30,7 @@ export default function ProductForm({
     useScrollLock(true);
     const [cities, setCities] = useState<City[]>([]);
     const [loadingCities, setLoadingCities] = useState(true);
+    const [occasionTypesList, setOccasionTypesList] = useState<OccasionType[]>([]);
 
     const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<ProductFormData>({
         defaultValues: product || {
@@ -59,7 +60,7 @@ export default function ProductForm({
     const tags = watch('tags') || [];
     const cityIds = watch('cityIds') || [];
 
-    // Fetch operational cities
+    // Fetch operational cities and active occasion types
     useEffect(() => {
         const fetchCities = async () => {
             try {
@@ -73,8 +74,31 @@ export default function ProductForm({
             }
         };
 
+        const fetchOccasionTypes = async () => {
+            try {
+                const data = await adminService.getActiveOccasionTypes();
+                setOccasionTypesList(data);
+            } catch (error) {
+                console.error('Failed to fetch occasion types:', error);
+            }
+        };
+
         fetchCities();
+        fetchOccasionTypes();
     }, []);
+
+    // Map occasion type keys ↔ display names for the MultiSelect
+    const occasionTypeOptions = occasionTypesList.map((ot) => ot.nameEn);
+    const occasionTypeKeyToName = (key: string) =>
+        occasionTypesList.find((ot) => ot.key === key)?.nameEn ?? key;
+    const occasionTypeNameToKey = (name: string) =>
+        occasionTypesList.find((ot) => ot.nameEn === name)?.key ?? name;
+
+    const selectedOccasionNames = occasionTypes.map(occasionTypeKeyToName);
+
+    const handleOccasionTypesChange = (names: string[]) => {
+        setValue('occasionTypes', names.map(occasionTypeNameToKey));
+    };
 
     const handleFormSubmit = (data: ProductFormData) => {
         if (data.images.length === 0) {
@@ -281,10 +305,10 @@ export default function ProductForm({
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <MultiSelect
                             label="Occasion Types"
-                            options={OCCASION_TYPES}
-                            value={occasionTypes}
-                            onChange={(value) => setValue('occasionTypes', value)}
-                            placeholder="Select occasion types"
+                            options={occasionTypeOptions}
+                            value={selectedOccasionNames}
+                            onChange={handleOccasionTypesChange}
+                            placeholder={occasionTypeOptions.length === 0 ? 'Loading...' : 'Select occasion types'}
                         />
 
                         <MultiSelect
